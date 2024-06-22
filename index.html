@@ -13,6 +13,7 @@
     flex-direction: column;
     justify-content: center;
     background: #333333;
+    color: white; /* Цвет текста белый */
   }
   .coin {
     background-color: #4CAF50;
@@ -43,11 +44,20 @@
     transform: translateX(-50%);
     font-size: 24px;
     z-index: 10;
+    color: white; /* Цвет текста белый */
+  }
+  #user-info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 18px;
+    color: white; /* Цвет текста белый */
   }
 </style>
 </head>
 <body>
 
+<div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
 <div class="coin" onclick="incrementScore()">Нажми на меня</div>
 <div id="balance">💲 0</div>
 
@@ -79,9 +89,14 @@ function setInitialBalance(initialBalance) {
 // Пример инициализации начального баланса
 setInitialBalance(0);
 
+// Проверка наличия Telegram Web App
 if (window.Telegram.WebApp) {
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
+
+  const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+  document.getElementById('userId').textContent = initDataUnsafe.user.id;
+  document.getElementById('username').textContent = initDataUnsafe.user.username;
 
   window.Telegram.WebApp.MainButton.setParams({
     text: "Закрыть",
