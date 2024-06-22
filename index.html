@@ -83,7 +83,7 @@ function setInitialBalance(initialBalance) {
 }
 
 function fetchInitialBalance(telegramId) {
-  const serverlessFunctionUrl = '/fetchBalance'; // Обновленный путь
+  const serverlessFunctionUrl = '/fetchBalance'; // Путь к вашей Serverless Function
 
   fetch(serverlessFunctionUrl, {
     method: 'POST',
@@ -96,9 +96,9 @@ function fetchInitialBalance(telegramId) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
-      const initialBalance = data.data[0].balance;
-      setInitialBalance(initialBalance);
+    if (data && data.balance !== undefined) {
+      setInitialBalance(data.balance);
+      alert('Баланс успешно получен: ' + data.balance);
     } else {
       alert('Ошибка получения данных: ' + JSON.stringify(data));
     }
