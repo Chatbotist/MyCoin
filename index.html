@@ -83,9 +83,9 @@ function setInitialBalance(initialBalance) {
 }
 
 function fetchInitialBalance(telegramId) {
-  const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
+  const serverlessFunctionUrl = '/fetchBalance'; // Обновленный путь
 
-  fetch(webhookUrl, {
+  fetch(serverlessFunctionUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
