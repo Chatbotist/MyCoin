@@ -83,26 +83,21 @@ function setInitialBalance(initialBalance) {
 }
 
 function fetchInitialBalance(telegramId) {
-  const ltToken = 'DOlW2wu8eIkzv2eu5yONxq2SUHrSXlLvRrbsRgDjBjzENmPI2vZpDyIKC6kb';
-  const schemaId = '66766a7ee60a49ba79057c62';
+  const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
 
-  fetch('https://app.leadteh.ru/api/v1/getListItems', {
+  fetch(webhookUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-Requested-With': 'XMLHttpRequest'
+      'Content-Type': 'application/json',
     },
-    body: new URLSearchParams({
-      'api_token': ltToken,
-      'schema_id': schemaId,
-      'filters[tg_id]': telegramId
+    body: JSON.stringify({
+      telegram_id: telegramId
     })
   })
   .then(response => response.json())
   .then(data => {
-    if (data && data.data && data.data[0]) {
-      const initialBalance = data.data[0].balance;
-      setInitialBalance(initialBalance);
+    if (data && data.balance !== undefined) {
+      setInitialBalance(data.balance);
     } else {
       alert('Ошибка получения данных: ' + JSON.stringify(data));
     }
