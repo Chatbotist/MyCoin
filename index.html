@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Кликер Монета</title>
-<meta name="description" content="Игра Кликер Монета - нажимай на монету и зарабатывай очки!">
-<meta name="keywords" content="игра, кликер, монета, Telegram, Web App">
-<meta name="author" content="Ваше Имя">
+<title>Hamster Combat Clone</title>
 <style>
   body {
     text-align: center;
@@ -16,50 +13,37 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: url('LeadtexFon.png') no-repeat center center fixed;
-    background-size: cover;
-    color: white; /* Цвет текста белый */
+    background: #f0f0f0;
+    color: #333;
   }
-  .coin {
-    width: 300px;
-    height: 300px;
-    background: url('LeadtexCoin.png') no-repeat center center;
+  .container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .hamster {
+    width: 150px;
+    height: 150px;
+    background: url('hamster.png') no-repeat center center;
     background-size: contain;
     cursor: pointer;
     margin: 0 auto;
-    margin-top: 120px;
-    transition: transform 0.05s, box-shadow 0.05s; /* Ускоряем возвращение кнопки */
-    user-select: none;
-    outline: none; /* Убираем обводку при фокусе */
-    -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
-    border-radius: 50%; /* Делаем кнопку круглой */
+    transition: transform 0.1s;
   }
-  .coin.active {
-    transform: scale(0.96);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  .hamster.active {
+    transform: scale(0.95);
   }
   #balance {
-    position: absolute;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 24px;
-    z-index: 10;
-    color: white; /* Цвет текста белый */
-  }
-  #user-info {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 18px;
-    color: white; /* Цвет текста белый */
+    margin-bottom: 20px;
   }
   .click-animation {
     position: absolute;
-    font-size: 36px; /* Увеличиваем размер текста на 50% */
-    color: white;
+    font-size: 24px;
+    color: #ff0000;
     animation: fadeUp 1s ease-out forwards;
-    pointer-events: none; /* Отключаем события мыши для анимации */
+    pointer-events: none;
   }
   @keyframes fadeUp {
     0% {
@@ -74,13 +58,12 @@
 </style>
 </head>
 <body>
-<div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
-<div class="coin" id="coin"></div>
-<div id="balance">💲 0</div>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<div class="container">
+  <div id="balance">Очки: 0</div>
+  <div class="hamster" id="hamster"></div>
+</div>
 <script>
 let balance = 0;
-let telegramId = null;
 
 function vibrateOnClick() {
   if ("vibrate" in navigator) {
@@ -90,7 +73,7 @@ function vibrateOnClick() {
 
 function incrementScore(event) {
   balance++;
-  document.getElementById('balance').textContent = '💲' + balance;
+  document.getElementById('balance').textContent = 'Очки: ' + balance;
   showClickAnimation(event.clientX, event.clientY);
 }
 
@@ -106,106 +89,33 @@ function showClickAnimation(x, y) {
   }, 1000);
 }
 
-function setInitialBalance(initialBalance) {
-  balance = initialBalance;
-  document.getElementById('balance').textContent = '💲' + balance;
-}
-
-function fetchInitialBalance(telegramId) {
-  const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
-
-  fetch(webhookUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      telegram_id: telegramId
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
-      const initialBalance = data.data[0].balance;
-      setInitialBalance(initialBalance);
-    } else {
-      alert('Ошибка получения данных: ' + JSON.stringify(data));
-    }
-  })
-  .catch(error => {
-    alert('Ошибка: ' + error);
-  });
-}
-
-// Проверка наличия Telegram Web App
-if (window.Telegram && window.Telegram.WebApp) {
-  Telegram.WebApp.expand();
-  Telegram.WebApp.enableClosingConfirmation();
-  const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-  if (initDataUnsafe && initDataUnsafe.user) {
-    telegramId = initDataUnsafe.user.id;
-    document.getElementById('userId').textContent = telegramId;
-    document.getElementById('username').textContent = initDataUnsafe.user.username;
-    // Получение начального баланса
-    fetchInitialBalance(telegramId);
-    window.Telegram.WebApp.MainButton.setParams({
-      text: "Закрыть",
-      color: "rgb(77, 76, 76)",
-      text_color: "#FFFFFF"
-    });
-    window.Telegram.WebApp.MainButton.show();
-    window.Telegram.WebApp.MainButton.onClick(function() {
-      const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
-      window.Telegram.WebApp.openLink(url);
-      window.Telegram.WebApp.close();
-    });
-  } else {
-    alert("initDataUnsafe.user is undefined");
-  }
-} else {
-  alert("Telegram Web App not detected");
-}
-
 function handleTouchStart(event) {
   event.preventDefault();
-  const coin = document.getElementById('coin');
-  const rect = coin.getBoundingClientRect();
+  const hamster = document.getElementById('hamster');
+  const rect = hamster.getBoundingClientRect();
   const touch = event.touches[0]; // Берем только первый палец
   if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
     incrementScore(touch);
     vibrateOnClick();
-    activateCoin();
+    hamster.classList.add('active');
+    setTimeout(() => hamster.classList.remove('active'), 50); // Ускоряем возвращение кнопки
   }
 }
 
 function handleMouseDown(event) {
   event.preventDefault();
-  const coin = document.getElementById('coin');
-  const rect = coin.getBoundingClientRect();
+  const hamster = document.getElementById('hamster');
+  const rect = hamster.getBoundingClientRect();
   if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
     incrementScore(event);
     vibrateOnClick();
-    activateCoin();
+    hamster.classList.add('active');
+    setTimeout(() => hamster.classList.remove('active'), 50); // Ускоряем возвращение кнопки
   }
 }
 
-function activateCoin() {
-  const coin = document.getElementById('coin');
-  coin.classList.add('active');
-  setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
-}
-
-document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
-document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
-
-// Блокировка закрытия окна смахиванием вниз
-if (window.Telegram && window.Telegram.WebApp) {
-  Telegram.WebApp.onEvent('viewportChanged', function() {
-    if (Telegram.WebApp.viewportStableHeight !== window.innerHeight) {
-      Telegram.WebApp.expand();
-    }
-  });
-}
+document.getElementById('hamster').addEventListener('mousedown', handleMouseDown);
+document.getElementById('hamster').addEventListener('touchstart', handleTouchStart);
 </script>
 </body>
 </html>
