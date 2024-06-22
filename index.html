@@ -82,8 +82,35 @@ function setInitialBalance(initialBalance) {
   document.getElementById('balance').textContent = '💲' + balance;
 }
 
-// Пример инициализации начального баланса
-setInitialBalance(0);
+function fetchInitialBalance(telegramId) {
+  const ltToken = 'DOlW2wu8eIkzv2eu5yONxq2SUHrSXlLvRrbsRgDjBjzENmPI2vZpDyIKC6kb';
+  const schemaId = '66766a7ee60a49ba79057c62';
+
+  fetch('https://app.leadteh.ru/api/v1/getListItems', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: new URLSearchParams({
+      'api_token': ltToken,
+      'schema_id': schemaId,
+      'filters[tg_id]': telegramId
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data && data.data && data.data[0]) {
+      const initialBalance = data.data[0].balance;
+      setInitialBalance(initialBalance);
+    } else {
+      console.error('Ошибка получения данных:', data);
+    }
+  })
+  .catch(error => {
+    console.error('Ошибка:', error);
+  });
+}
 
 // Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
@@ -94,8 +121,12 @@ if (window.Telegram && window.Telegram.WebApp) {
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   console.log("initDataUnsafe:", initDataUnsafe);
   if (initDataUnsafe && initDataUnsafe.user) {
-    document.getElementById('userId').textContent = initDataUnsafe.user.id;
+    const telegramId = initDataUnsafe.user.id;
+    document.getElementById('userId').textContent = telegramId;
     document.getElementById('username').textContent = initDataUnsafe.user.username;
+
+    // Получение начального баланса
+    fetchInitialBalance(telegramId);
 
     window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
