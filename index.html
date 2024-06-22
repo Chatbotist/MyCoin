@@ -56,7 +56,7 @@
   }
   .click-animation {
     position: absolute;
-    font-size: 24px;
+    font-size: 36px; /* Увеличиваем размер текста на 50% */
     color: white;
     animation: fadeUp 1s ease-out forwards;
     pointer-events: none; /* Отключаем события мыши для анимации */
@@ -81,10 +81,15 @@
 <script>
 let balance = 0;
 let telegramId = null;
+let lastVibrationTime = 0;
 
 function vibrateOnClick() {
-  if ("vibrate" in navigator) {
-    window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
+  const now = Date.now();
+  if (now - lastVibrationTime >= 100) { // Добавляем задержку в 100 миллисекунд
+    if ("vibrate" in navigator) {
+      window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
+      lastVibrationTime = now;
+    }
   }
 }
 
