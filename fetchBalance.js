@@ -1,23 +1,36 @@
-// api/fetchBalance.js
+// fetchBalance.js
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { telegram_id } = req.body;
 
-    // URL вебхука
-    const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
+    // API URL
+    const apiUrl = 'https://app.leadteh.ru/api/v1/getListItems';
+    const lt_token = 'DOlW2wu8eIkzv2eu5yONxq2SUHrSXlLvRrbsRgDjBjzENmPI2vZpDyIKC6kb';
+    const schema_id = '66766a7ee60a49ba79057c62';
+
+    // Формируем данные для запроса
+    const params = new URLSearchParams();
+    params.append('api_token', lt_token);
+    params.append('schema_id', schema_id);
+    params.append('filters[tg_id]', telegram_id);
 
     try {
-      const response = await fetch(webhookUrl, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({ telegram_id })
+        body: params.toString(),
       });
 
       const data = await response.json();
-      res.status(200).json(data);
+      if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
+        res.status(200).json({ balance: data.data[0].balance });
+      } else {
+        res.status(400).json({ error: 'Баланс не найден' });
+      }
     } catch (error) {
       res.status(500).json({ error: 'Ошибка выполнения запроса' });
     }
