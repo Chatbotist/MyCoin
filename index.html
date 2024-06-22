@@ -18,7 +18,7 @@
     justify-content: center;
     background: url('LeadtexFon.png') no-repeat center center fixed;
     background-size: cover;
-    color: white;
+    color: white; /* Цвет текста белый */
   }
   .coin {
     width: 300px;
@@ -30,12 +30,12 @@
     margin-top: 120px;
     transition: transform 0.1s;
     user-select: none;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
+    outline: none; /* Убираем обводку при фокусе */
+    -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
   }
   .coin:active {
     transform: scale(0.96);
-    transition: transform 0.05s;
+    transition: transform 0.05s; /* Уменьшаем время трансформации в два раза */
   }
   #balance {
     position: absolute;
@@ -44,48 +44,43 @@
     transform: translateX(-50%);
     font-size: 24px;
     z-index: 10;
-    color: white;
+    color: white; /* Цвет текста белый */
   }
   #user-info {
     position: absolute;
     top: 10px;
     left: 10px;
     font-size: 18px;
-    color: white;
+    color: white; /* Цвет текста белый */
   }
 </style>
 </head>
 <body>
-
 <div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
 <div class="coin" onclick="incrementScore()"></div>
 <div id="balance">💲 0</div>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 let balance = 0;
-
 function vibrateOnClick() {
   if ("vibrate" in navigator) {
     window.navigator.vibrate(100);
   }
 }
-
 function incrementScore() {
   balance++;
   document.getElementById('balance').textContent = '💲' + balance;
   vibrateOnClick();
 }
-
 function setInitialBalance(initialBalance) {
   balance = initialBalance;
   document.getElementById('balance').textContent = '💲' + balance;
 }
 
 function fetchInitialBalance(telegramId) {
-  const serverlessFunctionUrl = '/fetchBalance'; // Обратите внимание на путь
+  const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
 
-  fetch(serverlessFunctionUrl, {
+  fetch(webhookUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -96,9 +91,9 @@ function fetchInitialBalance(telegramId) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data && data.balance !== undefined) {
-      setInitialBalance(data.balance);
-      alert('Баланс успешно получен: ' + data.balance);
+    if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
+      const initialBalance = data.data[0].balance;
+      setInitialBalance(initialBalance);
     } else {
       alert('Ошибка получения данных: ' + JSON.stringify(data));
     }
@@ -107,28 +102,25 @@ function fetchInitialBalance(telegramId) {
     alert('Ошибка: ' + error);
   });
 }
-
+// Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
   alert("Telegram Web App detected");
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
-
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   alert("initDataUnsafe: " + JSON.stringify(initDataUnsafe));
   if (initDataUnsafe && initDataUnsafe.user) {
     const telegramId = initDataUnsafe.user.id;
     document.getElementById('userId').textContent = telegramId;
     document.getElementById('username').textContent = initDataUnsafe.user.username;
-
+    // Получение начального баланса
     fetchInitialBalance(telegramId);
-
     window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
       color: "rgb(77, 76, 76)",
       text_color: "#FFFFFF"
     });
     window.Telegram.WebApp.MainButton.show();
-
     window.Telegram.WebApp.MainButton.onClick(function() {
       save();
       window.navigator.vibrate(100);
@@ -140,11 +132,9 @@ if (window.Telegram && window.Telegram.WebApp) {
 } else {
   alert("Telegram Web App not detected");
 }
-
 function save() {
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   const userid = initDataUnsafe.user.id;
-
   fetch('https://api.directual.com/good/api/v5/data/WebUser/saveBalance?appID=1e836900-e4dc-4f0c-b73d-fbd01d3ae652&sessionID=yourSessionID', {
     method: 'POST',
     body: JSON.stringify({
@@ -162,7 +152,6 @@ function save() {
       alert('Ошибка: ' + error);
     });
 }
-
 function showConfirmationDialog() {
   Telegram.WebApp.showConfirm("💾 Прогресс сохранён!\n\nХотите выйти из игры?", function(confirm) {
     if (confirm) {
@@ -170,15 +159,14 @@ function showConfirmationDialog() {
     }
   });
 }
-
 window.addEventListener('beforeunload', function (e) {
   save();
 });
-
+setInterval(save, 5000);
+// Убираем выделение текста при клике на кнопку
 document.querySelector('.coin').addEventListener('mousedown', function(e) {
   e.preventDefault();
 });
 </script>
-
 </body>
 </html>
