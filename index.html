@@ -58,6 +58,7 @@
     font-size: 24px;
     color: white;
     animation: fadeUp 1s ease-out forwards;
+    pointer-events: none; /* Отключаем события мыши для анимации */
   }
   @keyframes fadeUp {
     0% {
@@ -150,34 +151,3 @@ if (window.Telegram && window.Telegram.WebApp) {
     // Получение начального баланса
     fetchInitialBalance(telegramId);
     window.Telegram.WebApp.MainButton.setParams({
-      text: "Закрыть",
-      color: "rgb(77, 76, 76)",
-      text_color: "#FFFFFF"
-    });
-    window.Telegram.WebApp.MainButton.show();
-    window.Telegram.WebApp.MainButton.onClick(function() {
-      const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
-      window.Telegram.WebApp.openLink(url);
-      window.Telegram.WebApp.close();
-    });
-  } else {
-    alert("initDataUnsafe.user is undefined");
-  }
-} else {
-  alert("Telegram Web App not detected");
-}
-
-document.getElementById('coin').addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  for (let i = 0; i < e.touches.length; i++) {
-    incrementScore(e.touches[i]);
-  }
-});
-
-document.getElementById('coin').addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  incrementScore(e);
-});
-</script>
-</body>
-</html>
