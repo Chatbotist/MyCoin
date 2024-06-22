@@ -151,3 +151,34 @@ if (window.Telegram && window.Telegram.WebApp) {
     // Получение начального баланса
     fetchInitialBalance(telegramId);
     window.Telegram.WebApp.MainButton.setParams({
+      text: "Закрыть",
+      color: "rgb(77, 76, 76)",
+      text_color: "#FFFFFF"
+    });
+    window.Telegram.WebApp.MainButton.show();
+    window.Telegram.WebApp.MainButton.onClick(function() {
+      const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
+      window.Telegram.WebApp.openLink(url);
+      window.Telegram.WebApp.close();
+    });
+  } else {
+    alert("initDataUnsafe.user is undefined");
+  }
+} else {
+  alert("Telegram Web App not detected");
+}
+
+document.getElementById('coin').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+  incrementScore(e);
+});
+
+document.getElementById('coin').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  Array.from(e.touches).forEach(touch => {
+    incrementScore(touch);
+  });
+});
+</script>
+</body>
+</html>
