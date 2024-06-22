@@ -171,6 +171,8 @@ if (window.Telegram && window.Telegram.WebApp) {
 document.getElementById('coin').addEventListener('mousedown', function(e) {
   e.preventDefault();
   incrementScore(e);
+  this.classList.add('active');
+  setTimeout(() => this.classList.remove('active'), 100);
 });
 
 document.getElementById('coin').addEventListener('touchstart', function(e) {
@@ -178,7 +180,18 @@ document.getElementById('coin').addEventListener('touchstart', function(e) {
   Array.from(e.touches).forEach(touch => {
     incrementScore(touch);
   });
+  this.classList.add('active');
+  setTimeout(() => this.classList.remove('active'), 100);
 });
+
+// Блокировка закрытия окна смахиванием вниз
+if (window.Telegram && window.Telegram.WebApp) {
+  Telegram.WebApp.onEvent('viewportChanged', function() {
+    if (Telegram.WebApp.viewportStableHeight !== window.innerHeight) {
+      Telegram.WebApp.expand();
+    }
+  });
+}
 </script>
 </body>
 </html>
