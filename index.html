@@ -29,8 +29,7 @@
     background: url('LeadtexCoin.png') no-repeat center center;
     background-size: contain;
     cursor: pointer;
-    margin: 0 auto;
-    margin-top: 120px;
+    margin: 20px auto;
     transition: transform 0.1s, box-shadow 0.1s;
     user-select: none;
     outline: none;
@@ -42,18 +41,11 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
   #balance, #level {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    margin: 10px 0;
     font-size: 24px;
     z-index: 10;
     color: white;
-  }
-  #balance {
-    top: 100px;
-  }
-  #level {
-    top: 140px;
   }
   #user-info {
     position: absolute;
@@ -80,15 +72,15 @@
     }
   }
   .shop {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    margin: 20px auto;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
     border-radius: 10px;
     color: white;
     cursor: pointer;
+    width: 80%;
+    max-width: 400px;
   }
   .shop-item {
     margin: 10px 0;
@@ -98,19 +90,19 @@
 <body>
 <div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
 <div class="container">
-  <div id="balance">Очки: 0</div>
+  <div id="balance">Баллы: 0</div>
   <div id="level">Уровень: 1</div>
   <div class="hamster" id="hamster"></div>
 </div>
 <div class="shop" id="shop">
-  <div class="shop-item" onclick="buyUpgrade('hamster1')">Купить Хомяк #1 (100 очков)</div>
-  <div class="shop-item" onclick="buyUpgrade('hamster2')">Купить Хомяк #2 (200 очков)</div>
+  <div class="shop-item" onclick="buyUpgrade('hamster1')">Купить Хомяк #1 (100 баллов)</div>
+  <div class="shop-item" onclick="buyUpgrade('hamster2')">Купить Хомяк #2 (200 баллов)</div>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 let balance = 0;
 let level = 1;
-let pointsToNextLevel = 10;
+let pointsToNextLevel = 1000;
 let hamsterImage = 'LeadtexCoin.png';
 let telegramId = null;
 
@@ -122,7 +114,7 @@ function vibrateOnClick() {
 
 function incrementScore(event) {
   balance++;
-  document.getElementById('balance').textContent = 'Очки: ' + balance;
+  document.getElementById('balance').textContent = 'Баллы: ' + balance;
   showClickAnimation(event.clientX, event.clientY);
   checkLevelUp();
   saveGameState();
@@ -143,10 +135,8 @@ function showClickAnimation(x, y) {
 function checkLevelUp() {
   if (balance >= pointsToNextLevel) {
     level++;
-    balance -= pointsToNextLevel;
     pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
     document.getElementById('level').textContent = 'Уровень: ' + level;
-    document.getElementById('balance').textContent = 'Очки: ' + balance;
   }
 }
 
@@ -155,19 +145,19 @@ function buyUpgrade(upgrade) {
     balance -= 100;
     hamsterImage = 'hamster1.png';
     document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
-    document.getElementById('balance').textContent = 'Очки: ' + balance;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
   } else if (upgrade === 'hamster2' && balance >= 200) {
     balance -= 200;
     hamsterImage = 'hamster2.png';
     document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
-    document.getElementById('balance').textContent = 'Очки: ' + balance;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
   }
   saveGameState();
 }
 
 function setInitialBalance(initialBalance) {
   balance = initialBalance;
-  document.getElementById('balance').textContent = 'Очки: ' + balance;
+  document.getElementById('balance').textContent = 'Баллы: ' + balance;
 }
 
 function fetchInitialBalance(telegramId) {
@@ -213,7 +203,7 @@ function loadGameState() {
     level = gameState.level;
     pointsToNextLevel = gameState.pointsToNextLevel;
     hamsterImage = gameState.hamsterImage;
-    document.getElementById('balance').textContent = 'Очки: ' + balance;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
     document.getElementById('level').textContent = 'Уровень: ' + level;
     document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
   }
