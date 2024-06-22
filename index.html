@@ -62,16 +62,20 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 let balance = 0;
+let telegramId = null;
+
 function vibrateOnClick() {
   if ("vibrate" in navigator) {
     window.navigator.vibrate(100);
   }
 }
+
 function incrementScore() {
   balance++;
   document.getElementById('balance').textContent = '💲' + balance;
   vibrateOnClick();
 }
+
 function setInitialBalance(initialBalance) {
   balance = initialBalance;
   document.getElementById('balance').textContent = '💲' + balance;
@@ -111,7 +115,7 @@ if (window.Telegram && window.Telegram.WebApp) {
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   alert("initDataUnsafe: " + JSON.stringify(initDataUnsafe));
   if (initDataUnsafe && initDataUnsafe.user) {
-    const telegramId = initDataUnsafe.user.id;
+    telegramId = initDataUnsafe.user.id;
     document.getElementById('userId').textContent = telegramId;
     document.getElementById('username').textContent = initDataUnsafe.user.username;
     // Получение начального баланса
@@ -142,6 +146,7 @@ function save() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
+      'telegram_id': telegramId,
       'balance': balance
     })
   }).then(res => res.json())
@@ -165,7 +170,6 @@ window.addEventListener('beforeunload', function (e) {
   save();
 });
 
-setInterval(save, 5000);
 
 // Убираем выделение текста при клике на кнопку
 document.querySelector('.coin').addEventListener('mousedown', function(e) {
