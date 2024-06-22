@@ -25,14 +25,19 @@ export default async function handler(req, res) {
         body: params.toString(),
       });
 
-      const data = await response.json();
-      if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
-        res.status(200).json({ balance: data.data[0].balance });
-      } else {
-        res.status(400).json({ error: 'Баланс не найден' });
+      const text = await response.text();
+      try {
+        const data = JSON.parse(text);
+        if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
+          res.status(200).json({ balance: data.data[0].balance });
+        } else {
+          res.status(400).json({ error: 'Баланс не найден' });
+        }
+      } catch (jsonError) {
+        res.status(500).json({ error: 'Ошибка парсинга JSON', details: text });
       }
     } catch (error) {
-      res.status(500).json({ error: 'Ошибка выполнения запроса' });
+      res.status(500).json({ error: 'Ошибка выполнения запроса', details: error.message });
     }
   } else {
     res.status(405).json({ error: 'Метод не поддерживается' });
