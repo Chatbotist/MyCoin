@@ -32,6 +32,7 @@
     user-select: none;
     outline: none; /* Убираем обводку при фокусе */
     -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
+    border-radius: 50%; /* Делаем кнопку круглой */
   }
   .coin.active {
     transform: scale(0.96);
@@ -169,15 +170,16 @@ if (window.Telegram && window.Telegram.WebApp) {
 
 function handleTouchStart(event) {
   event.preventDefault();
-  const touch = event.touches[0];
   const coin = document.getElementById('coin');
   const rect = coin.getBoundingClientRect();
-  if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-    incrementScore(touch);
-    vibrateOnClick();
-    coin.classList.add('active');
-    setTimeout(() => coin.classList.remove('active'), 100);
-  }
+  Array.from(event.touches).forEach(touch => {
+    if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+      incrementScore(touch);
+      vibrateOnClick();
+      coin.classList.add('active');
+      setTimeout(() => coin.classList.remove('active'), 100);
+    }
+  });
 }
 
 function handleMouseDown(event) {
