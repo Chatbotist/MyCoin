@@ -47,13 +47,6 @@
     z-index: 10;
     color: white;
   }
-  #user-info {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 18px;
-    color: white;
-  }
   .click-animation {
     position: absolute;
     font-size: 36px;
@@ -84,7 +77,7 @@
   }
   .progress-bar-inner {
     height: 100%;
-    background: #4caf50;
+    background: linear-gradient(to right, #00DE70, #0496BC);
     width: 0;
     transition: width 0.3s;
   }
@@ -93,6 +86,9 @@
     justify-content: space-around;
     background-color: #2C2F36;
     padding: 10px;
+    position: absolute;
+    top: 0;
+    width: 100%;
   }
   .menu button {
     background-color: #2C2F36;
@@ -101,7 +97,10 @@
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
+    flex: 1;
+  }
+  .menu button.active {
+    background-color: #1F2126;
   }
   .menu button:hover {
     background-color: #3a3d44;
@@ -109,12 +108,11 @@
 </style>
 </head>
 <body>
-<div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
 <div class="menu">
-  <button onclick="showCoin()">Coin</button>
-  <button onclick="showUp()">Up</button>
-  <button onclick="showTask()">Task</button>
-  <button onclick="showTop()">Top</button>
+  <button id="coinButton" class="active" onclick="showCoin()">Coin</button>
+  <button id="upButton" onclick="showUp()">Up</button>
+  <button id="taskButton" onclick="showTask()">Task</button>
+  <button id="topButton" onclick="showTop()">Top</button>
 </div>
 <div class="container">
   <div id="balance">Баллы: 0</div>
@@ -162,8 +160,10 @@ function showClickAnimation(x, y) {
 function checkLevelUp() {
   if (balance >= pointsToNextLevel) {
     level++;
+    balance = 0; // Обнуляем баланс при достижении нового уровня
     pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
     document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
   }
 }
 
@@ -173,19 +173,30 @@ function updateProgressBar() {
 }
 
 function showCoin() {
+  setActiveButton('coinButton');
   alert('Coin button clicked');
 }
 
 function showUp() {
+  setActiveButton('upButton');
   alert('Up button clicked');
 }
 
 function showTask() {
+  setActiveButton('taskButton');
   alert('Task button clicked');
 }
 
 function showTop() {
+  setActiveButton('topButton');
   alert('Top button clicked');
+}
+
+function setActiveButton(buttonId) {
+  document.querySelectorAll('.menu button').forEach(button => {
+    button.classList.remove('active');
+  });
+  document.getElementById(buttonId).classList.add('active');
 }
 
 function saveGameState() {
@@ -250,8 +261,6 @@ if (window.Telegram && window.Telegram.WebApp) {
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   if (initDataUnsafe && initDataUnsafe.user) {
     telegramId = initDataUnsafe.user.id;
-    document.getElementById('userId').textContent = telegramId;
-    document.getElementById('username').textContent = initDataUnsafe.user.username;
     fetchInitialBalance(telegramId);
     window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
