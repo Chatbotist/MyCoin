@@ -15,7 +15,7 @@
     justify-content: center;
     background: url('LeadtexFon.png') no-repeat center center fixed;
     background-size: cover;
-    color: white; /* Цвет текста белый */
+    color: white;
   }
   .container {
     position: relative;
@@ -33,9 +33,9 @@
     margin-top: 120px;
     transition: transform 0.1s, box-shadow 0.1s;
     user-select: none;
-    outline: none; /* Убираем обводку при фокусе */
-    -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
-    border-radius: 50%; /* Делаем кнопку круглой */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50%;
   }
   .hamster.active {
     transform: scale(0.95);
@@ -47,7 +47,7 @@
     transform: translateX(-50%);
     font-size: 24px;
     z-index: 10;
-    color: white; /* Цвет текста белый */
+    color: white;
   }
   #balance {
     top: 100px;
@@ -60,14 +60,14 @@
     top: 10px;
     left: 10px;
     font-size: 18px;
-    color: white; /* Цвет текста белый */
+    color: white;
   }
   .click-animation {
     position: absolute;
-    font-size: 36px; /* Увеличиваем размер текста на 50% */
+    font-size: 36px;
     color: white;
     animation: fadeUp 1s ease-out forwards;
-    pointer-events: none; /* Отключаем события мыши для анимации */
+    pointer-events: none;
   }
   @keyframes fadeUp {
     0% {
@@ -125,6 +125,7 @@ function incrementScore(event) {
   document.getElementById('balance').textContent = 'Очки: ' + balance;
   showClickAnimation(event.clientX, event.clientY);
   checkLevelUp();
+  saveGameState();
 }
 
 function showClickAnimation(x, y) {
@@ -161,6 +162,7 @@ function buyUpgrade(upgrade) {
     document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
     document.getElementById('balance').textContent = 'Очки: ' + balance;
   }
+  saveGameState();
 }
 
 function setInitialBalance(initialBalance) {
@@ -192,6 +194,29 @@ function fetchInitialBalance(telegramId) {
   .catch(error => {
     alert('Ошибка: ' + error);
   });
+}
+
+function saveGameState() {
+  const gameState = {
+    balance: balance,
+    level: level,
+    pointsToNextLevel: pointsToNextLevel,
+    hamsterImage: hamsterImage
+  };
+  localStorage.setItem('gameState', JSON.stringify(gameState));
+}
+
+function loadGameState() {
+  const gameState = JSON.parse(localStorage.getItem('gameState'));
+  if (gameState) {
+    balance = gameState.balance;
+    level = gameState.level;
+    pointsToNextLevel = gameState.pointsToNextLevel;
+    hamsterImage = gameState.hamsterImage;
+    document.getElementById('balance').textContent = 'Очки: ' + balance;
+    document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
+  }
 }
 
 // Проверка наличия Telegram Web App
@@ -228,4 +253,46 @@ function handleTouchStart(event) {
   const hamster = document.getElementById('hamster');
   const rect = hamster.getBoundingClientRect();
   const touch = event.touches[0]; // Берем только первый палец
-  if (touch.clientX >= rect.left && touch.client
+  if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+    incrementScore(touch);
+    vibrateOnClick();
+    hamster.classList.add('active');
+    setTimeout(() => hamster.classList.remove('active'), 50);
+  }
+}
+
+function handleMouseDown(event) {
+  event.preventDefault();
+  const hamster = document.getElementById('hamster');
+  const rect = hamster.getBoundingClientRect();
+  if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
+    incrementScore(event);
+    vibrateOnClick();
+    hamster.classList.add('active');
+    setTimeout(() => hamster.classList.remove('active'), 50);
+  }
+}
+
+document.getElementById('hamster').addEventListener('mousedown', handleMouseDown);
+document.getElementById('hamster').addEventListener('touchstart', handleTouchStart);
+
+// Загрузка состояния игры при загрузке страницы
+window.addEventListener('load', loadGameState);
+
+// Блокировка закрытия окна смахиванием вниз
+if (window.Telegram && window.Telegram.WebApp) {
+  Telegram.WebApp.MainButton.setParams({
+    text: "Закрыть",
+    color: "rgb(77, 76, 76)",
+    text_color: "#FFFFFF"
+  });
+  Telegram.WebApp.MainButton.show();
+  Telegram.WebApp.MainButton.onClick(function() {
+    const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
+    window.Telegram.WebApp.openLink(url);
+    window.Telegram.WebApp.close();
+  });
+}
+</script>
+</body>
+</html>
