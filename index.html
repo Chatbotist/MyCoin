@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Кликер Монета</title>
+<meta name="description" content="Игра Кликер Монета - нажимай на монету и зарабатывай очки!">
+<meta name="keywords" content="игра, кликер, монета, Telegram, Web App">
+<meta name="author" content="Ваше Имя">
 <style>
   body {
     text-align: center;
@@ -59,9 +62,10 @@
 <body>
 
 <div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
-<button class="coin" onclick="incrementScore()">Нажми на меня</button>
+<div class="coin" onclick="incrementScore()">Нажми на меня</div>
 <div id="balance">💲 0</div>
 
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 let balance = 0;
 
