@@ -83,7 +83,7 @@ function setInitialBalance(initialBalance) {
 }
 
 function fetchInitialBalance(telegramId) {
-  const serverlessFunctionUrl = '/fetchBalance';
+  const serverlessFunctionUrl = '/fetchBalance'; // Обратите внимание на путь
 
   fetch(serverlessFunctionUrl, {
     method: 'POST',
