@@ -34,6 +34,7 @@ export default async function handler(req, res) {
           res.status(400).json({ error: 'Баланс не найден' });
         }
       } catch (jsonError) {
+        console.error('Ошибка парсинга JSON:', text); // Логируем полный текст ответа для диагностики
         res.status(500).json({ error: 'Ошибка парсинга JSON', details: text });
       }
     } catch (error) {
