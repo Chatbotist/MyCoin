@@ -83,7 +83,7 @@ function setInitialBalance(initialBalance) {
 }
 
 function fetchInitialBalance(telegramId) {
-  const serverlessFunctionUrl = '/fetchBalance';
+  const serverlessFunctionUrl = '/fetchBalance'; // Обратите внимание на путь
 
   fetch(serverlessFunctionUrl, {
     method: 'POST',
@@ -95,3 +95,90 @@ function fetchInitialBalance(telegramId) {
     })
   })
   .then(response => response.json())
+  .then(data => {
+    if (data && data.balance !== undefined) {
+      setInitialBalance(data.balance);
+      alert('Баланс успешно получен: ' + data.balance);
+    } else {
+      alert('Ошибка получения данных: ' + JSON.stringify(data));
+    }
+  })
+  .catch(error => {
+    alert('Ошибка: ' + error);
+  });
+}
+
+if (window.Telegram && window.Telegram.WebApp) {
+  alert("Telegram Web App detected");
+  Telegram.WebApp.expand();
+  Telegram.WebApp.enableClosingConfirmation();
+
+  const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+  alert("initDataUnsafe: " + JSON.stringify(initDataUnsafe));
+  if (initDataUnsafe && initDataUnsafe.user) {
+    const telegramId = initDataUnsafe.user.id;
+    document.getElementById('userId').textContent = telegramId;
+    document.getElementById('username').textContent = initDataUnsafe.user.username;
+
+    fetchInitialBalance(telegramId);
+
+    window.Telegram.WebApp.MainButton.setParams({
+      text: "Закрыть",
+      color: "rgb(77, 76, 76)",
+      text_color: "#FFFFFF"
+    });
+    window.Telegram.WebApp.MainButton.show();
+
+    window.Telegram.WebApp.MainButton.onClick(function() {
+      save();
+      window.navigator.vibrate(100);
+      showConfirmationDialog();
+    });
+  } else {
+    alert("initDataUnsafe.user is undefined");
+  }
+} else {
+  alert("Telegram Web App not detected");
+}
+
+function save() {
+  const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+  const userid = initDataUnsafe.user.id;
+
+  fetch('https://api.directual.com/good/api/v5/data/WebUser/saveBalance?appID=1e836900-e4dc-4f0c-b73d-fbd01d3ae652&sessionID=yourSessionID', {
+    method: 'POST',
+    body: JSON.stringify({
+      'id': userid,
+      'balance': balance
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  }).then(res => res.json())
+    .then(data => {
+      alert('Данные сохранены: ' + JSON.stringify(data));
+    })
+    .catch(error => {
+      alert('Ошибка: ' + error);
+    });
+}
+
+function showConfirmationDialog() {
+  Telegram.WebApp.showConfirm("💾 Прогресс сохранён!\n\nХотите выйти из игры?", function(confirm) {
+    if (confirm) {
+      Telegram.WebApp.close();
+    }
+  });
+}
+
+window.addEventListener('beforeunload', function (e) {
+  save();
+});
+
+document.querySelector('.coin').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+});
+</script>
+
+</body>
+</html>
