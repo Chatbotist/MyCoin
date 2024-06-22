@@ -20,29 +20,19 @@
     color: white; /* Цвет текста белый */
   }
   .coin {
-    background-color: #4CAF50;
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     width: 300px;
     height: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px;
-    color: white;
+    background: url('LeadtexCoin.png') no-repeat center center;
+    background-size: contain;
     cursor: pointer;
     margin: 0 auto;
     margin-top: 120px;
-    transition: background-color 0.1s;
+    transition: transform 0.1s;
     user-select: none;
     outline: none; /* Убираем обводку при фокусе */
     -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
   }
-  .coin:focus {
-    outline: none; /* Убираем обводку при фокусе */
-  }
   .coin:active {
-    background-color: #388E3C;
     transform: scale(0.96);
     transition: transform 0.1s;
   }
@@ -67,7 +57,7 @@
 <body>
 
 <div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
-<div class="coin" onclick="incrementScore()">Нажми на меня</div>
+<div class="coin" onclick="incrementScore()"></div>
 <div id="balance">💲 0</div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -80,15 +70,10 @@ function vibrateOnClick() {
   }
 }
 
-var rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
-
 function incrementScore() {
   balance++;
   document.getElementById('balance').textContent = '💲' + balance;
   vibrateOnClick();
-
-  var randomColorIndex = Math.floor(Math.random() * 7);
-  document.querySelector('.coin').style.backgroundColor = rainbowColors[randomColorIndex];
 }
 
 function setInitialBalance(initialBalance) {
