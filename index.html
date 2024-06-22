@@ -28,14 +28,14 @@
     cursor: pointer;
     margin: 0 auto;
     margin-top: 120px;
-    transition: transform 0.1s;
+    transition: transform 0.1s, box-shadow 0.1s;
     user-select: none;
     outline: none; /* Убираем обводку при фокусе */
     -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
   }
   .coin:active {
     transform: scale(0.96);
-    transition: transform 0.05s; /* Уменьшаем время трансформации в два раза */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
   #balance {
     position: absolute;
@@ -80,10 +80,15 @@
 <script>
 let balance = 0;
 let telegramId = null;
+let lastVibrationTime = 0;
 
 function vibrateOnClick() {
-  if ("vibrate" in navigator) {
-    window.navigator.vibrate(100);
+  const now = Date.now();
+  if (now - lastVibrationTime > 100) { // Минимальный интервал между вибрациями 100 мс
+    if ("vibrate" in navigator) {
+      window.navigator.vibrate(100);
+    }
+    lastVibrationTime = now;
   }
 }
 
