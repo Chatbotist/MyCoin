@@ -81,34 +81,28 @@
 <script>
 let balance = 0;
 let telegramId = null;
-let lastVibrationTime = 0;
 
-function vibrateOnClick() {
-  const now = Date.now();
-  if (now - lastVibrationTime >= 100) { // Добавляем задержку в 100 миллисекунд
-    if ("vibrate" in navigator) {
-      window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
-      lastVibrationTime = now;
-    }
+async function vibrateOnClick() {
+  if ("vibrate" in navigator) {
+    window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
   }
 }
 
-function incrementScore(event) {
+async function incrementScore(event) {
   balance++;
   document.getElementById('balance').textContent = '💲' + balance;
-  showClickAnimation(event.clientX, event.clientY);
+  await showClickAnimation(event.clientX, event.clientY);
 }
 
-function showClickAnimation(x, y) {
+async function showClickAnimation(x, y) {
   const clickText = document.createElement('div');
   clickText.textContent = '+1';
   clickText.className = 'click-animation';
   clickText.style.left = `${x}px`;
   clickText.style.top = `${y}px`;
   document.body.appendChild(clickText);
-  setTimeout(() => {
-    clickText.remove();
-  }, 1000);
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  clickText.remove();
 }
 
 function setInitialBalance(initialBalance) {
@@ -177,10 +171,10 @@ function handleTouchStart(event) {
   event.preventDefault();
   const coin = document.getElementById('coin');
   const rect = coin.getBoundingClientRect();
-  Array.from(event.touches).forEach(touch => {
+  Array.from(event.touches).forEach(async touch => {
     if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-      incrementScore(touch);
-      vibrateOnClick();
+      await incrementScore(touch);
+      await vibrateOnClick();
       coin.classList.add('active');
       setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
     }
