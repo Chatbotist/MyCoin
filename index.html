@@ -28,7 +28,7 @@
     cursor: pointer;
     margin: 0 auto;
     margin-top: 120px;
-    transition: transform 0.1s, box-shadow 0.1s;
+    transition: transform 0.05s, box-shadow 0.05s; /* Ускоряем возвращение кнопки */
     user-select: none;
     outline: none; /* Убираем обводку при фокусе */
     -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
@@ -84,7 +84,7 @@ let telegramId = null;
 
 function vibrateOnClick() {
   if ("vibrate" in navigator) {
-    window.navigator.vibrate([200, 100, 200]); // Сильная вибрация
+    window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
   }
 }
 
@@ -177,7 +177,7 @@ function handleTouchStart(event) {
       incrementScore(touch);
       vibrateOnClick();
       coin.classList.add('active');
-      setTimeout(() => coin.classList.remove('active'), 100);
+      setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
     }
   });
 }
@@ -190,7 +190,7 @@ function handleMouseDown(event) {
     incrementScore(event);
     vibrateOnClick();
     coin.classList.add('active');
-    setTimeout(() => coin.classList.remove('active'), 100);
+    setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
   }
 }
 
