@@ -104,22 +104,22 @@ function fetchInitialBalance(telegramId) {
       const initialBalance = data.data[0].balance;
       setInitialBalance(initialBalance);
     } else {
-      console.error('Ошибка получения данных:', data);
+      alert('Ошибка получения данных: ' + JSON.stringify(data));
     }
   })
   .catch(error => {
-    console.error('Ошибка:', error);
+    alert('Ошибка: ' + error);
   });
 }
 
 // Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
-  console.log("Telegram Web App detected");
+  alert("Telegram Web App detected");
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
 
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-  console.log("initDataUnsafe:", initDataUnsafe);
+  alert("initDataUnsafe: " + JSON.stringify(initDataUnsafe));
   if (initDataUnsafe && initDataUnsafe.user) {
     const telegramId = initDataUnsafe.user.id;
     document.getElementById('userId').textContent = telegramId;
@@ -141,10 +141,10 @@ if (window.Telegram && window.Telegram.WebApp) {
       showConfirmationDialog();
     });
   } else {
-    console.error("initDataUnsafe.user is undefined");
+    alert("initDataUnsafe.user is undefined");
   }
 } else {
-  console.error("Telegram Web App not detected");
+  alert("Telegram Web App not detected");
 }
 
 function save() {
@@ -162,10 +162,10 @@ function save() {
     },
   }).then(res => res.json())
     .then(data => {
-      console.log(data);
+      alert('Данные сохранены: ' + JSON.stringify(data));
     })
     .catch(error => {
-      console.error('Ошибка:', error);
+      alert('Ошибка: ' + error);
     });
 }
 
