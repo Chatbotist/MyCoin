@@ -139,11 +139,9 @@ function fetchInitialBalance(telegramId) {
 
 // Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
-  alert("Telegram Web App detected");
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-  alert("initDataUnsafe: " + JSON.stringify(initDataUnsafe));
   if (initDataUnsafe && initDataUnsafe.user) {
     telegramId = initDataUnsafe.user.id;
     document.getElementById('userId').textContent = telegramId;
@@ -176,8 +174,7 @@ function handleTouchStart(event) {
   if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
     incrementScore(touch);
     vibrateOnClick();
-    coin.classList.add('active');
-    setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
+    activateCoin();
   }
 }
 
@@ -188,9 +185,14 @@ function handleMouseDown(event) {
   if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
     incrementScore(event);
     vibrateOnClick();
-    coin.classList.add('active');
-    setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
+    activateCoin();
   }
+}
+
+function activateCoin() {
+  const coin = document.getElementById('coin');
+  coin.classList.add('active');
+  setTimeout(() => coin.classList.remove('active'), 50); // Ускоряем возвращение кнопки
 }
 
 document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
