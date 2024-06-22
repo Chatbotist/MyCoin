@@ -33,7 +33,7 @@
     outline: none; /* Убираем обводку при фокусе */
     -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
   }
-  .coin:active {
+  .coin.active {
     transform: scale(0.96);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
@@ -80,22 +80,16 @@
 <script>
 let balance = 0;
 let telegramId = null;
-let lastVibrationTime = 0;
 
 function vibrateOnClick() {
-  const now = Date.now();
-  if (now - lastVibrationTime > 100) { // Минимальный интервал между вибрациями 100 мс
-    if ("vibrate" in navigator) {
-      window.navigator.vibrate(100);
-    }
-    lastVibrationTime = now;
+  if ("vibrate" in navigator) {
+    window.navigator.vibrate(100);
   }
 }
 
 function incrementScore(event) {
   balance++;
   document.getElementById('balance').textContent = '💲' + balance;
-  vibrateOnClick();
   showClickAnimation(event.clientX, event.clientY);
 }
 
@@ -173,21 +167,33 @@ if (window.Telegram && window.Telegram.WebApp) {
   alert("Telegram Web App not detected");
 }
 
-document.getElementById('coin').addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  incrementScore(e);
-  this.classList.add('active');
-  setTimeout(() => this.classList.remove('active'), 100);
-});
-
-document.getElementById('coin').addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  Array.from(e.touches).forEach(touch => {
+function handleTouchStart(event) {
+  event.preventDefault();
+  const touch = event.touches[0];
+  const coin = document.getElementById('coin');
+  const rect = coin.getBoundingClientRect();
+  if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
     incrementScore(touch);
-  });
-  this.classList.add('active');
-  setTimeout(() => this.classList.remove('active'), 100);
-});
+    vibrateOnClick();
+    coin.classList.add('active');
+    setTimeout(() => coin.classList.remove('active'), 100);
+  }
+}
+
+function handleMouseDown(event) {
+  event.preventDefault();
+  const coin = document.getElementById('coin');
+  const rect = coin.getBoundingClientRect();
+  if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
+    incrementScore(event);
+    vibrateOnClick();
+    coin.classList.add('active');
+    setTimeout(() => coin.classList.remove('active'), 100);
+  }
+}
+
+document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
+document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
 
 // Блокировка закрытия окна смахиванием вниз
 if (window.Telegram && window.Telegram.WebApp) {
