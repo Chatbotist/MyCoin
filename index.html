@@ -18,7 +18,7 @@
     justify-content: center;
     background: url('LeadtexFon.png') no-repeat center center fixed;
     background-size: cover;
-    color: white; /* Цвет текста белый */
+    color: white;
   }
   .coin {
     width: 300px;
@@ -30,12 +30,12 @@
     margin-top: 120px;
     transition: transform 0.1s;
     user-select: none;
-    outline: none; /* Убираем обводку при фокусе */
-    -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .coin:active {
     transform: scale(0.96);
-    transition: transform 0.05s; /* Уменьшаем время трансформации в два раза */
+    transition: transform 0.05s;
   }
   #balance {
     position: absolute;
@@ -44,14 +44,14 @@
     transform: translateX(-50%);
     font-size: 24px;
     z-index: 10;
-    color: white; /* Цвет текста белый */
+    color: white;
   }
   #user-info {
     position: absolute;
     top: 10px;
     left: 10px;
     font-size: 18px;
-    color: white; /* Цвет текста белый */
+    color: white;
   }
 </style>
 </head>
@@ -83,7 +83,7 @@ function setInitialBalance(initialBalance) {
 }
 
 function fetchInitialBalance(telegramId) {
-  const serverlessFunctionUrl = '/fetchBalance'; // Путь к вашей Serverless Function
+  const serverlessFunctionUrl = '/fetchBalance';
 
   fetch(serverlessFunctionUrl, {
     method: 'POST',
@@ -108,7 +108,6 @@ function fetchInitialBalance(telegramId) {
   });
 }
 
-// Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
   alert("Telegram Web App detected");
   Telegram.WebApp.expand();
@@ -121,7 +120,6 @@ if (window.Telegram && window.Telegram.WebApp) {
     document.getElementById('userId').textContent = telegramId;
     document.getElementById('username').textContent = initDataUnsafe.user.username;
 
-    // Получение начального баланса
     fetchInitialBalance(telegramId);
 
     window.Telegram.WebApp.MainButton.setParams({
@@ -177,7 +175,6 @@ window.addEventListener('beforeunload', function (e) {
   save();
 });
 
-// Убираем выделение текста при клике на кнопку
 document.querySelector('.coin').addEventListener('mousedown', function(e) {
   e.preventDefault();
 });
