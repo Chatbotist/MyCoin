@@ -72,31 +72,57 @@
     }
   }
   .shop {
-    position: relative;
-    margin: 20px auto;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-    border-radius: 10px;
-    color: white;
-    cursor: pointer;
-    width: 80%;
-    max-width: 400px;
+    display: none; /* Убираем старый магазин */
   }
-  .shop-item {
-    margin: 10px 0;
+  .progress-bar {
+    width: 80%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin: 10px auto;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: #4caf50;
+    width: 0;
+    transition: width 0.3s;
+  }
+  .menu {
+    display: flex;
+    justify-content: space-around;
+    background-color: #2C2F36;
+    padding: 10px;
+  }
+  .menu button {
+    background-color: #2C2F36;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .menu button:hover {
+    background-color: #3a3d44;
   }
 </style>
 </head>
 <body>
 <div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
+<div class="menu">
+  <button onclick="showCoin()">Coin</button>
+  <button onclick="showUp()">Up</button>
+  <button onclick="showTask()">Task</button>
+  <button onclick="showTop()">Top</button>
+</div>
 <div class="container">
   <div id="balance">Баллы: 0</div>
   <div id="level">Уровень: 1</div>
+  <div class="progress-bar">
+    <div class="progress-bar-inner" id="progress"></div>
+  </div>
   <div class="hamster" id="hamster"></div>
-</div>
-<div class="shop" id="shop">
-  <div class="shop-item" onclick="buyUpgrade('hamster1')">Купить Хомяк #1 (100 баллов)</div>
-  <div class="shop-item" onclick="buyUpgrade('hamster2')">Купить Хомяк #2 (200 баллов)</div>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
@@ -117,6 +143,7 @@ function incrementScore(event) {
   document.getElementById('balance').textContent = 'Баллы: ' + balance;
   showClickAnimation(event.clientX, event.clientY);
   checkLevelUp();
+  updateProgressBar();
   saveGameState();
 }
 
@@ -140,24 +167,49 @@ function checkLevelUp() {
   }
 }
 
-function buyUpgrade(upgrade) {
-  if (upgrade === 'hamster1' && balance >= 100) {
-    balance -= 100;
-    hamsterImage = 'hamster1.png';
-    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
-    document.getElementById('balance').textContent = 'Баллы: ' + balance;
-  } else if (upgrade === 'hamster2' && balance >= 200) {
-    balance -= 200;
-    hamsterImage = 'hamster2.png';
-    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
-    document.getElementById('balance').textContent = 'Баллы: ' + balance;
-  }
-  saveGameState();
+function updateProgressBar() {
+  const progress = Math.min((balance / pointsToNextLevel) * 100, 100);
+  document.getElementById('progress').style.width = progress + '%';
 }
 
-function setInitialBalance(initialBalance) {
-  balance = initialBalance;
-  document.getElementById('balance').textContent = 'Баллы: ' + balance;
+function showCoin() {
+  alert('Coin button clicked');
+}
+
+function showUp() {
+  alert('Up button clicked');
+}
+
+function showTask() {
+  alert('Task button clicked');
+}
+
+function showTop() {
+  alert('Top button clicked');
+}
+
+function saveGameState() {
+  const gameState = {
+    balance: balance,
+    level: level,
+    pointsToNextLevel: pointsToNextLevel,
+    hamsterImage: hamsterImage
+  };
+  localStorage.setItem('gameState', JSON.stringify(gameState));
+}
+
+function loadGameState() {
+  const gameState = JSON.parse(localStorage.getItem('gameState'));
+  if (gameState) {
+    balance = gameState.balance;
+    level = gameState.level;
+    pointsToNextLevel = gameState.pointsToNextLevel;
+    hamsterImage = gameState.hamsterImage;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
+    updateProgressBar();
+  }
 }
 
 function fetchInitialBalance(telegramId) {
@@ -186,30 +238,12 @@ function fetchInitialBalance(telegramId) {
   });
 }
 
-function saveGameState() {
-  const gameState = {
-    balance: balance,
-    level: level,
-    pointsToNextLevel: pointsToNextLevel,
-    hamsterImage: hamsterImage
-  };
-  localStorage.setItem('gameState', JSON.stringify(gameState));
+function setInitialBalance(initialBalance) {
+  balance = initialBalance;
+  document.getElementById('balance').textContent = 'Баллы: ' + balance;
+  updateProgressBar();
 }
 
-function loadGameState() {
-  const gameState = JSON.parse(localStorage.getItem('gameState'));
-  if (gameState) {
-    balance = gameState.balance;
-    level = gameState.level;
-    pointsToNextLevel = gameState.pointsToNextLevel;
-    hamsterImage = gameState.hamsterImage;
-    document.getElementById('balance').textContent = 'Баллы: ' + balance;
-    document.getElementById('level').textContent = 'Уровень: ' + level;
-    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
-  }
-}
-
-// Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
@@ -218,7 +252,6 @@ if (window.Telegram && window.Telegram.WebApp) {
     telegramId = initDataUnsafe.user.id;
     document.getElementById('userId').textContent = telegramId;
     document.getElementById('username').textContent = initDataUnsafe.user.username;
-    // Получение начального баланса
     fetchInitialBalance(telegramId);
     window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
