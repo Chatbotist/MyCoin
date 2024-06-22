@@ -96,8 +96,9 @@ function fetchInitialBalance(telegramId) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data && data.balance !== undefined) {
-      setInitialBalance(data.balance);
+    if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
+      const initialBalance = data.data[0].balance;
+      setInitialBalance(initialBalance);
     } else {
       alert('Ошибка получения данных: ' + JSON.stringify(data));
     }
