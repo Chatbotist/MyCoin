@@ -84,7 +84,7 @@ let telegramId = null;
 
 function vibrateOnClick() {
   if ("vibrate" in navigator) {
-    window.navigator.vibrate(100);
+    window.navigator.vibrate([200, 100, 200]); // Сильная вибрация
   }
 }
 
