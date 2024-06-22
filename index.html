@@ -147,6 +147,11 @@ window.addEventListener('beforeunload', function (e) {
 });
 
 setInterval(save, 5000);
+
+// Убираем выделение текста при клике на кнопку
+document.querySelector('.coin').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+});
 </script>
 
 </body>
