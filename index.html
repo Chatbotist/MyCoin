@@ -102,6 +102,7 @@ function fetchInitialBalance(telegramId) {
     alert('Ошибка: ' + error);
   });
 }
+
 // Проверка наличия Telegram Web App
 if (window.Telegram && window.Telegram.WebApp) {
   alert("Telegram Web App detected");
@@ -132,18 +133,17 @@ if (window.Telegram && window.Telegram.WebApp) {
 } else {
   alert("Telegram Web App not detected");
 }
+
 function save() {
-  const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-  const userid = initDataUnsafe.user.id;
-  fetch('https://api.directual.com/good/api/v5/data/WebUser/saveBalance?appID=1e836900-e4dc-4f0c-b73d-fbd01d3ae652&sessionID=yourSessionID', {
+  const webhookUrl = 'https://hook.eu2.make.com/98f3cqy7idbwzjhijmtcjdjfmvt5as2n';
+  fetch(webhookUrl, {
     method: 'POST',
-    body: JSON.stringify({
-      'id': userid,
-      'balance': balance
-    }),
     headers: {
       'Content-Type': 'application/json'
     },
+    body: JSON.stringify({
+      'balance': balance
+    })
   }).then(res => res.json())
     .then(data => {
       alert('Данные сохранены: ' + JSON.stringify(data));
@@ -152,6 +152,7 @@ function save() {
       alert('Ошибка: ' + error);
     });
 }
+
 function showConfirmationDialog() {
   Telegram.WebApp.showConfirm("💾 Прогресс сохранён!\n\nХотите выйти из игры?", function(confirm) {
     if (confirm) {
@@ -159,10 +160,13 @@ function showConfirmationDialog() {
     }
   });
 }
+
 window.addEventListener('beforeunload', function (e) {
   save();
 });
+
 setInterval(save, 5000);
+
 // Убираем выделение текста при клике на кнопку
 document.querySelector('.coin').addEventListener('mousedown', function(e) {
   e.preventDefault();
