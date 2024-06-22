@@ -91,26 +91,34 @@ function setInitialBalance(initialBalance) {
 setInitialBalance(0);
 
 // Проверка наличия Telegram Web App
-if (window.Telegram.WebApp) {
+if (window.Telegram && window.Telegram.WebApp) {
+  console.log("Telegram Web App detected");
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
 
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-  document.getElementById('userId').textContent = initDataUnsafe.user.id;
-  document.getElementById('username').textContent = initDataUnsafe.user.username;
+  console.log("initDataUnsafe:", initDataUnsafe);
+  if (initDataUnsafe && initDataUnsafe.user) {
+    document.getElementById('userId').textContent = initDataUnsafe.user.id;
+    document.getElementById('username').textContent = initDataUnsafe.user.username;
 
-  window.Telegram.WebApp.MainButton.setParams({
-    text: "Закрыть",
-    color: "rgb(77, 76, 76)",
-    text_color: "#FFFFFF"
-  });
-  window.Telegram.WebApp.MainButton.show();
+    window.Telegram.WebApp.MainButton.setParams({
+      text: "Закрыть",
+      color: "rgb(77, 76, 76)",
+      text_color: "#FFFFFF"
+    });
+    window.Telegram.WebApp.MainButton.show();
 
-  window.Telegram.WebApp.MainButton.onClick(function() {
-    save();
-    window.navigator.vibrate(100);
-    showConfirmationDialog();
-  });
+    window.Telegram.WebApp.MainButton.onClick(function() {
+      save();
+      window.navigator.vibrate(100);
+      showConfirmationDialog();
+    });
+  } else {
+    console.error("initDataUnsafe.user is undefined");
+  }
+} else {
+  console.error("Telegram Web App not detected");
 }
 
 function save() {
