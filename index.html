@@ -127,9 +127,9 @@ if (window.Telegram && window.Telegram.WebApp) {
     });
     window.Telegram.WebApp.MainButton.show();
     window.Telegram.WebApp.MainButton.onClick(function() {
-      save();
-      window.navigator.vibrate(100);
-      showConfirmationDialog();
+      const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
+      window.Telegram.WebApp.openLink(url);
+      window.Telegram.WebApp.close();
     });
   } else {
     alert("initDataUnsafe.user is undefined");
@@ -137,39 +137,6 @@ if (window.Telegram && window.Telegram.WebApp) {
 } else {
   alert("Telegram Web App not detected");
 }
-
-function save() {
-  const webhookUrl = 'https://hook.eu2.make.com/98f3cqy7idbwzjhijmtcjdjfmvt5as2n';
-  fetch(webhookUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      'telegram_id': telegramId,
-      'balance': balance
-    })
-  }).then(res => res.json())
-    .then(data => {
-      alert('Данные сохранены: ' + JSON.stringify(data));
-    })
-    .catch(error => {
-      alert('Ошибка: ' + error);
-    });
-}
-
-function showConfirmationDialog() {
-  Telegram.WebApp.showConfirm("💾 Прогресс сохранён!\n\nХотите выйти из игры?", function(confirm) {
-    if (confirm) {
-      Telegram.WebApp.close();
-    }
-  });
-}
-
-window.addEventListener('beforeunload', function (e) {
-  save();
-});
-
 
 // Убираем выделение текста при клике на кнопку
 document.querySelector('.coin').addEventListener('mousedown', function(e) {
