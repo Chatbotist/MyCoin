@@ -41,14 +41,19 @@
     transform: scale(0.95);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
-  #balance {
+  #balance, #level {
     position: absolute;
-    top: 100px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 24px;
     z-index: 10;
     color: white; /* Цвет текста белый */
+  }
+  #balance {
+    top: 100px;
+  }
+  #level {
+    top: 140px;
   }
   #user-info {
     position: absolute;
@@ -74,17 +79,39 @@
       transform: translateY(-50px);
     }
   }
+  .shop {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+  }
+  .shop-item {
+    margin: 10px 0;
+  }
 </style>
 </head>
 <body>
 <div id="user-info">ID: <span id="userId"></span><br>Username: <span id="username"></span></div>
 <div class="container">
   <div id="balance">Очки: 0</div>
+  <div id="level">Уровень: 1</div>
   <div class="hamster" id="hamster"></div>
+</div>
+<div class="shop" id="shop">
+  <div class="shop-item" onclick="buyUpgrade('hamster1')">Купить Хомяк #1 (100 очков)</div>
+  <div class="shop-item" onclick="buyUpgrade('hamster2')">Купить Хомяк #2 (200 очков)</div>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 let balance = 0;
+let level = 1;
+let pointsToNextLevel = 10;
+let hamsterImage = 'LeadtexCoin.png';
 let telegramId = null;
 
 function vibrateOnClick() {
@@ -97,6 +124,7 @@ function incrementScore(event) {
   balance++;
   document.getElementById('balance').textContent = 'Очки: ' + balance;
   showClickAnimation(event.clientX, event.clientY);
+  checkLevelUp();
 }
 
 function showClickAnimation(x, y) {
@@ -109,6 +137,30 @@ function showClickAnimation(x, y) {
   setTimeout(() => {
     clickText.remove();
   }, 1000);
+}
+
+function checkLevelUp() {
+  if (balance >= pointsToNextLevel) {
+    level++;
+    balance -= pointsToNextLevel;
+    pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
+    document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('balance').textContent = 'Очки: ' + balance;
+  }
+}
+
+function buyUpgrade(upgrade) {
+  if (upgrade === 'hamster1' && balance >= 100) {
+    balance -= 100;
+    hamsterImage = 'hamster1.png';
+    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
+    document.getElementById('balance').textContent = 'Очки: ' + balance;
+  } else if (upgrade === 'hamster2' && balance >= 200) {
+    balance -= 200;
+    hamsterImage = 'hamster2.png';
+    document.getElementById('hamster').style.backgroundImage = `url(${hamsterImage})`;
+    document.getElementById('balance').textContent = 'Очки: ' + balance;
+  }
 }
 
 function setInitialBalance(initialBalance) {
@@ -176,37 +228,4 @@ function handleTouchStart(event) {
   const hamster = document.getElementById('hamster');
   const rect = hamster.getBoundingClientRect();
   const touch = event.touches[0]; // Берем только первый палец
-  if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-    incrementScore(touch);
-    vibrateOnClick();
-    hamster.classList.add('active');
-    setTimeout(() => hamster.classList.remove('active'), 50); // Ускоряем возвращение кнопки
-  }
-}
-
-function handleMouseDown(event) {
-  event.preventDefault();
-  const hamster = document.getElementById('hamster');
-  const rect = hamster.getBoundingClientRect();
-  if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
-    incrementScore(event);
-    vibrateOnClick();
-    hamster.classList.add('active');
-    setTimeout(() => hamster.classList.remove('active'), 50); // Ускоряем возвращение кнопки
-  }
-}
-
-document.getElementById('hamster').addEventListener('mousedown', handleMouseDown);
-document.getElementById('hamster').addEventListener('touchstart', handleTouchStart);
-
-// Блокировка закрытия окна смахиванием вниз
-if (window.Telegram && window.Telegram.WebApp) {
-  Telegram.WebApp.onEvent('viewportChanged', function() {
-    if (Telegram.WebApp.viewportStableHeight !== window.innerHeight) {
-      Telegram.WebApp.expand();
-    }
-  });
-}
-</script>
-</body>
-</html>
+  if (touch.clientX >= rect.left && touch.client
