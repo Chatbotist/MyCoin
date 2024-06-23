@@ -263,10 +263,10 @@
         window.Telegram.WebApp.close();
       });
     } else {
-      alert("initDataUnsafe.user is undefined");
+      console.error("initDataUnsafe.user is undefined");
     }
   } else {
-    alert("Telegram Web App not detected");
+    console.error("Telegram Web App not detected");
   }
 
   function handleTouchStart(event) {
@@ -312,14 +312,33 @@
 
   // Функция для получения начального баланса пользователя из сервера через вебхук
   function fetchInitialBalance(telegramId) {
-    fetch(`https://yourserver.com/getBalance?telegramId=${telegramId}`)
-      .then(response => response.json())
-      .then(data => {
-        balance = data.balance;
-        document.getElementById('balance').textContent = 'Баллы: ' + balance;
-        updateProgressBar();
+    const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
+
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        telegram_id: telegramId
       })
-      .catch(error => console.error('Error fetching balance:', error));
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
+        const initialBalance = data.data[0].balance;
+        setInitialBalance(initialBalance);
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+    });
+  }
+
+  function setInitialBalance(initialBalance) {
+    balance = initialBalance;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    updateProgressBar();
   }
 
   // Сохранение состояния игры при закрытии приложения
