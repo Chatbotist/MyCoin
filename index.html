@@ -279,111 +279,111 @@
     updateProgressBar();
   }
 
-    if (window.Telegram && window.Telegram.WebApp) {
-        // Устанавливаем цвет фона веб-приложения
-        window.Telegram.WebApp.setBackgroundColor("#2E3E54"); // Цвет фона приложения
+  if (window.Telegram && window.Telegram.WebApp) {
+    // Устанавливаем цвет фона веб-приложения
+    window.Telegram.WebApp.setBackgroundColor("#2E3E54"); // Цвет фона приложения
 
-        // Устанавливаем цвет заголовка веб-приложения
-        window.Telegram.WebApp.setHeaderColor("#182A42"); // Цвет заголовка
+    // Устанавливаем цвет заголовка веб-приложения
+    window.Telegram.WebApp.setHeaderColor("#182A42"); // Цвет заголовка
 
-        Telegram.WebApp.expand();
-        Telegram.WebApp.enableClosingConfirmation();
-        const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-        if (initDataUnsafe && initDataUnsafe.user) {
-            telegramId = initDataUnsafe.user.id;
-            fetchInitialBalance(telegramId);
-            window.Telegram.WebApp.MainButton.setParams({
-                text: "Закрыть",
-                color: "#2C2F36", // Цвет главной кнопки телеграм
-                text_color: "#FFFFFF"
-            });
-            window.Telegram.WebApp.MainButton.show();
-            window.Telegram.WebApp.MainButton.onClick(function () {
-                const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
-                window.Telegram.WebApp.openLink(url);
-                window.Telegram.WebApp.close();
-            });
-        } else {
-            alert("initDataUnsafe.user is undefined");
-        }
+    Telegram.WebApp.expand();
+    Telegram.WebApp.enableClosingConfirmation();
+    const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+    if (initDataUnsafe && initDataUnsafe.user) {
+      telegramId = initDataUnsafe.user.id;
+      fetchInitialBalance(telegramId);
+      window.Telegram.WebApp.MainButton.setParams({
+        text: "Закрыть",
+        color: "#2C2F36", // Цвет главной кнопки телеграм
+        text_color: "#FFFFFF"
+      });
+      window.Telegram.WebApp.MainButton.show();
+      window.Telegram.WebApp.MainButton.onClick(function () {
+        const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
+        window.Telegram.WebApp.openLink(url);
+        window.Telegram.WebApp.close();
+      });
     } else {
-        alert("Telegram Web App not detected");
+      alert("initDataUnsafe.user is undefined");
     }
+  } else {
+    alert("Telegram Web App not detected");
+  }
 
-    function handleTouchStart(event) {
-        event.preventDefault();
-        const coin = document.getElementById('coin');
-        const rect = coin.getBoundingClientRect();
-        const touch = event.touches[0]; // Берем только первый палец
-        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-            incrementScore(touch);
-            vibrateOnClick();
-            coin.classList.add('active');
-            setTimeout(() => coin.classList.remove('active'), 50);
-        }
+  function handleTouchStart(event) {
+    event.preventDefault();
+    const coin = document.getElementById('coin');
+    const rect = coin.getBoundingClientRect();
+    const touch = event.touches[0]; // Берем только первый палец
+    if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+      incrementScore(touch);
+      vibrateOnClick();
+      coin.classList.add('active');
+      setTimeout(() => coin.classList.remove('active'), 50);
     }
+  }
 
-    function handleMouseDown(event) {
-        event.preventDefault();
-        const coin = document.getElementById('coin');
-        const rect = coin.getBoundingClientRect();
-        if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
-            incrementScore(event);
-            vibrateOnClick();
-            coin.classList.add('active');
-            setTimeout(() => coin.classList.remove('active'), 50);
-        }
+  function handleMouseDown(event) {
+    event.preventDefault();
+    const coin = document.getElementById('coin');
+    const rect = coin.getBoundingClientRect();
+    if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
+      incrementScore(event);
+      vibrateOnClick();
+      coin.classList.add('active');
+      setTimeout(() => coin.classList.remove('active'), 50);
     }
+  }
 
-    document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
-    document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
+  document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
+  document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
 
-    // Загрузка состояния игры при загрузке страницы
-    window.addEventListener('load', loadGameState);
+  // Загрузка состояния игры при загрузке страницы
+  window.addEventListener('load', loadGameState);
 
-    // Блокировка закрытия окна смахиванием вниз и постоянное разворачивание
-    if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.onEvent('viewportChanged', function (height) {
-            if (height < window.innerHeight) {
-                Telegram.WebApp.expand();
-            }
-        });
-
-        // Проверка развертывания при загрузке страницы
-        var isExpanded = window.Telegram.WebApp.isExpanded;
-        console.log("Развернуто на весь экран:", isExpanded);
-
-        var viewportHeight = window.Telegram.WebApp.viewportHeight;
-        console.log("Высота видимой области:", viewportHeight);
-
-        if (viewportHeight < window.innerHeight) {
-            Telegram.WebApp.expand();
-        }
-    }
-
-    // Запрещаем увеличение масштаба жестами
-    document.addEventListener('gesturestart', function (event) {
-        event.preventDefault();
+  // Блокировка закрытия окна смахиванием вниз и постоянное разворачивание
+  if (window.Telegram && window.Telegram.WebApp) {
+    Telegram.WebApp.onEvent('viewportChanged', function (height) {
+      if (height < window.innerHeight) {
+        Telegram.WebApp.expand();
+      }
     });
 
-    // Автоматическая адаптация под любой экран, с сохранением пропорций
-    function resizeGame() {
-        const container = document.querySelector('.container');
-        const aspectRatio = 16 / 9; // Примерное соотношение сторон
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
+    // Проверка развертывания при загрузке страницы
+    var isExpanded = window.Telegram.WebApp.isExpanded;
+    console.log("Развернуто на весь экран:", isExpanded);
 
-        if (windowWidth / windowHeight < aspectRatio) {
-            container.style.width = '100%';
-            container.style.height = 'auto';
-        } else {
-            container.style.width = 'auto';
-            container.style.height = '100%';
-        }
+    var viewportHeight = window.Telegram.WebApp.viewportHeight;
+    console.log("Высота видимой области:", viewportHeight);
+
+    if (viewportHeight < window.innerHeight) {
+      Telegram.WebApp.expand();
     }
+  }
 
-    window.addEventListener('resize', resizeGame);
-    resizeGame();
+  // Запрещаем увеличение масштаба жестами
+  document.addEventListener('gesturestart', function (event) {
+    event.preventDefault();
+  });
+
+  // Автоматическая адаптация под любой экран, с сохранением пропорций
+  function resizeGame() {
+    const container = document.querySelector('.container');
+    const aspectRatio = 16 / 9; // Примерное соотношение сторон
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    if (windowWidth / windowHeight < aspectRatio) {
+      container.style.width = '100%';
+      container.style.height = 'auto';
+    } else {
+      container.style.width = 'auto';
+      container.style.height = '100%';
+    }
+  }
+
+  window.addEventListener('resize', resizeGame);
+  resizeGame();
 </script>
 </body>
 </html>
