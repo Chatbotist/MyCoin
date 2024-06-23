@@ -84,11 +84,12 @@
   .menu {
     display: flex;
     justify-content: space-around;
-    background-color: #2C2F36;
+    background-color: #FFFFFF;
     padding: 10px;
     position: absolute;
     top: 0;
     width: 100%;
+    height: 50px;
   }
   .menu button {
     background-color: #2C2F36;
@@ -98,6 +99,7 @@
     font-size: 16px;
     cursor: pointer;
     flex: 1;
+    height: 100%;
   }
   .menu button.active {
     background-color: #1F2126;
@@ -160,10 +162,11 @@ function showClickAnimation(x, y) {
 function checkLevelUp() {
   if (balance >= pointsToNextLevel) {
     level++;
-    balance = 0; // Обнуляем баланс при достижении нового уровня
+    balance -= pointsToNextLevel; // Уменьшаем баланс на количество очков для перехода на новый уровень
     pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
     document.getElementById('level').textContent = 'Уровень: ' + level;
     document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    updateProgressBar();
   }
 }
 
@@ -267,6 +270,11 @@ if (window.Telegram && window.Telegram.WebApp) {
       color: "rgb(77, 76, 76)",
       text_color: "#FFFFFF"
     });
+        window.Telegram.WebApp.MainButton.setParams({
+      text: "Закрыть",
+      color: "rgb(77, 76, 76)",
+      text_color: "#FFFFFF"
+    });
     window.Telegram.WebApp.MainButton.show();
     window.Telegram.WebApp.MainButton.onClick(function() {
       const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
@@ -313,16 +321,10 @@ window.addEventListener('load', loadGameState);
 
 // Блокировка закрытия окна смахиванием вниз
 if (window.Telegram && window.Telegram.WebApp) {
-  Telegram.WebApp.MainButton.setParams({
-    text: "Закрыть",
-    color: "rgb(77, 76, 76)",
-    text_color: "#FFFFFF"
-  });
-  Telegram.WebApp.MainButton.show();
-  Telegram.WebApp.MainButton.onClick(function() {
-    const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
-    window.Telegram.WebApp.openLink(url);
-    window.Telegram.WebApp.close();
+  Telegram.WebApp.onEvent('viewportChanged', function(height) {
+    if (height < window.innerHeight) {
+      Telegram.WebApp.expand();
+    }
   });
 }
 </script>
