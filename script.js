@@ -137,7 +137,7 @@ if (window.Telegram && window.Telegram.WebApp) {
   // Устанавливаем цвет заголовка веб-приложения
   window.Telegram.WebApp.setHeaderColor("#182A42"); // Цвет заголовка
 
-    Telegram.WebApp.expand();
+  Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   if (initDataUnsafe && initDataUnsafe.user) {
