@@ -18,6 +18,7 @@
     color: white;
     overflow: hidden;
     position: relative;
+    z-index: 1;
   }
 
   .container {
@@ -38,12 +39,15 @@
     background: url('LeadtexCoin.png') no-repeat center center;
     background-size: contain;
     cursor: pointer;
-    margin: 0 auto;
-    margin-top: 120px;
-    transition: transform 0.1s;
+    margin: 70px auto 20px auto;
+    transition: transform 0.1s, box-shadow 0.1s;
     user-select: none;
-    outline: none; /* Убираем обводку при фокусе */
-    -webkit-tap-highlight-color: transparent; /* Убираем выделение на мобильных устройствах */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50%;
+    display: block; /* Убедимся, что элемент отображается */
+    z-index: 20; /* Поднимаем монету */
+    position: relative;
   }
 
   .coin.active {
