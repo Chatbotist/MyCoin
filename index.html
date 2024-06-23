@@ -29,7 +29,7 @@
     background: url('LeadtexCoin.png') no-repeat center center;
     background-size: contain;
     cursor: pointer;
-    margin: 20px auto;
+    margin: 70px auto 20px auto; /* Опущено на 50 пикселей вниз */
     transition: transform 0.1s, box-shadow 0.1s;
     user-select: none;
     outline: none;
@@ -69,7 +69,7 @@
   }
   .progress-bar {
     width: 80%;
-    height: 20px;
+    height: 10px; /* В два раза тоньше */
     background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     margin: 10px auto;
@@ -84,7 +84,7 @@
   .menu {
     display: flex;
     justify-content: space-around;
-    background-color: #FFFFFF;
+    background-color: transparent; /* Убираем белую обводку */
     padding: 10px;
     position: absolute;
     top: 0;
@@ -162,16 +162,16 @@ function showClickAnimation(x, y) {
 function checkLevelUp() {
   if (balance >= pointsToNextLevel) {
     level++;
-    balance -= pointsToNextLevel; // Уменьшаем баланс на количество очков для перехода на новый уровень
+    balance = balance; // Баллы не обнуляются, продолжают копиться
     pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
     document.getElementById('level').textContent = 'Уровень: ' + level;
     document.getElementById('balance').textContent = 'Баллы: ' + balance;
-    updateProgressBar();
+    updateProgressBar(true); // Обнуляем прогресс бар
   }
 }
 
-function updateProgressBar() {
-  const progress = Math.min((balance / pointsToNextLevel) * 100, 100);
+function updateProgressBar(reset = false) {
+  const progress = reset ? 0 : Math.min((balance / pointsToNextLevel) * 100, 100);
   document.getElementById('progress').style.width = progress + '%';
 }
 
@@ -259,18 +259,19 @@ function setInitialBalance(initialBalance) {
 }
 
 if (window.Telegram && window.Telegram.WebApp) {
+  // Устанавливаем цвет фона веб-приложения
+  window.Telegram.WebApp.setBackgroundColor("#FFFFFF"); // Белый фон
+
+  // Устанавливаем цвет заголовка веб-приложения
+  window.Telegram.WebApp.setHeaderColor("#000000"); // Черный заголовок
+
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   if (initDataUnsafe && initDataUnsafe.user) {
     telegramId = initDataUnsafe.user.id;
     fetchInitialBalance(telegramId);
-    window.Telegram.WebApp.MainButton.setParams({
-      text: "Закрыть",
-      color: "rgb(77, 76, 76)",
-      text_color: "#FFFFFF"
-    });
-        window.Telegram.WebApp.MainButton.setParams({
+       window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
       color: "rgb(77, 76, 76)",
       text_color: "#FFFFFF"
@@ -319,13 +320,20 @@ document.getElementById('hamster').addEventListener('touchstart', handleTouchSta
 // Загрузка состояния игры при загрузке страницы
 window.addEventListener('load', loadGameState);
 
-// Блокировка закрытия окна смахиванием вниз
+// Блокировка закрытия окна смахиванием вниз и постоянное разворачивание
 if (window.Telegram && window.Telegram.WebApp) {
   Telegram.WebApp.onEvent('viewportChanged', function(height) {
     if (height < window.innerHeight) {
       Telegram.WebApp.expand();
     }
   });
+
+  // Проверка развертывания при загрузке страницы
+  var viewportHeight = window.Telegram.WebApp.viewportHeight;
+  console.log("Высота видимой области:", viewportHeight);
+  if (viewportHeight < window.innerHeight) {
+    Telegram.WebApp.expand();
+  }
 }
 </script>
 </body>
