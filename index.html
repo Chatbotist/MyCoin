@@ -87,9 +87,9 @@
   }
   .menu {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     background-color: #2C2F36; /* Цвет фона меню */
-    padding: 10px;
+    padding: 0;
     position: absolute;
     top: 0;
     width: 100%;
@@ -99,11 +99,11 @@
     background-color: #2C2F36;
     border: none;
     color: white;
-    padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     flex: 1;
     height: 100%;
+    margin: 0;
   }
   .menu button.active {
     background-color: #1F2126;
@@ -271,7 +271,7 @@ if (window.Telegram && window.Telegram.WebApp) {
 
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
-  const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+    const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
   if (initDataUnsafe && initDataUnsafe.user) {
     telegramId = initDataUnsafe.user.id;
     fetchInitialBalance(telegramId);
