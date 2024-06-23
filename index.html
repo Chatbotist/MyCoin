@@ -29,12 +29,12 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    z-index: 10;
+    z-index: 10; /* Поднимаем контейнер */
   }
 
   .coin {
-    width: 200px;
-    height: 200px;
+    width: 300px;
+    height: 300px;
     background: url('LeadtexCoin.png') no-repeat center center;
     background-size: contain;
     cursor: pointer;
@@ -44,8 +44,8 @@
     outline: none;
     -webkit-tap-highlight-color: transparent;
     border-radius: 50%;
-    display: block;
-    z-index: 20;
+    display: block; /* Убедимся, что элемент отображается */
+    z-index: 20; /* Поднимаем монету */
     position: relative;
   }
 
@@ -89,7 +89,7 @@
     margin: 10px auto;
     overflow: hidden;
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Заполнение слева направо */
   }
 
   .progress-bar-inner {
@@ -108,6 +108,7 @@
     top: 0;
     width: 100%;
     height: 50px;
+    z-index: 30; /* Поднимаем меню */
   }
 
   .menu button {
@@ -285,7 +286,8 @@
 
     // Устанавливаем цвет заголовка веб-приложения
     window.Telegram.WebApp.setHeaderColor("#182A42");
-        Telegram.WebApp.expand();
+
+    Telegram.WebApp.expand();
     Telegram.WebApp.enableClosingConfirmation();
     const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
     if (initDataUnsafe && initDataUnsafe.user) {
@@ -313,7 +315,7 @@
     event.preventDefault();
     const coin = document.getElementById('coin');
     const rect = coin.getBoundingClientRect();
-    const touch = event.touches[0];
+    const touch = event.touches[0]; // Берем только первый палец
     if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
       incrementScore(touch);
       vibrateOnClick();
@@ -368,7 +370,7 @@
   // Автоматическая адаптация под любой экран, с сохранением пропорций
   function resizeGame() {
     const container = document.querySelector('.container');
-    const aspectRatio = 16 / 9;
+    const aspectRatio = 16 / 9; // Примерное соотношение сторон
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
