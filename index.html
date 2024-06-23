@@ -33,7 +33,7 @@
   }
 
   .coin {
-    width: 200px; /* Уменьшаем размер для мобильных устройств */
+    width: 200px;
     height: 200px;
     background: url('LeadtexCoin.png') no-repeat center center;
     background-size: contain;
@@ -272,7 +272,6 @@
       alert('Ошибка: ' + error);
     });
   }
-    }
 
   function setInitialBalance(initialBalance) {
     balance = initialBalance;
@@ -286,8 +285,7 @@
 
     // Устанавливаем цвет заголовка веб-приложения
     window.Telegram.WebApp.setHeaderColor("#182A42");
-
-    Telegram.WebApp.expand();
+        Telegram.WebApp.expand();
     Telegram.WebApp.enableClosingConfirmation();
     const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
     if (initDataUnsafe && initDataUnsafe.user) {
