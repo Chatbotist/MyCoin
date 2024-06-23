@@ -173,8 +173,8 @@
     const clickText = document.createElement('div');
     clickText.textContent = '+1';
     clickText.className = 'click-animation';
-    clickText.style.left = `${x}px`;
-    clickText.style.top = `${y}px`;
+    clickText.style.left = `${x - 18}px`; // Смещение для центрирования текста
+    clickText.style.top = `${y - 50}px`; // Смещение для отображения над монетой
     document.body.appendChild(clickText);
     setTimeout(() => {
       clickText.remove();
@@ -250,6 +250,7 @@
     const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
     if (initDataUnsafe && initDataUnsafe.user) {
       telegramId = initDataUnsafe.user.id;
+      fetchInitialBalance(telegramId); // Получение начального баланса через вебхук
       window.Telegram.WebApp.MainButton.setParams({
         text: "Сохранить результат",
         color: "#2C2F36",
@@ -309,18 +310,16 @@
   window.addEventListener('resize', resizeGame);
   resizeGame();
 
-  // Функция для получения начального баланса пользователя из сервера
+  // Функция для получения начального баланса пользователя из сервера через вебхук
   function fetchInitialBalance(telegramId) {
-    // Здесь можно добавить запрос к серверу для получения начального баланса пользователя
-    // Пример:
-    // fetch(`https://yourserver.com/getBalance?telegramId=${telegramId}`)
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     balance = data.balance;
-    //     document.getElementById('balance').textContent = 'Баллы: ' + balance;
-    //     updateProgressBar();
-    //   })
-    //   .catch(error => console.error('Error fetching balance:', error));
+    fetch(`https://yourserver.com/getBalance?telegramId=${telegramId}`)
+      .then(response => response.json())
+      .then(data => {
+        balance = data.balance;
+        document.getElementById('balance').textContent = 'Баллы: ' + balance;
+        updateProgressBar();
+      })
+      .catch(error => console.error('Error fetching balance:', error));
   }
 
   // Сохранение состояния игры при закрытии приложения
