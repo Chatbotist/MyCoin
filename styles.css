@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: #2E3E54; /* Фон */
   margin: 0;
   padding: 0;
   display: flex;
@@ -21,6 +21,15 @@ body {
   margin: 0 5px;
   font-size: 16px;
   cursor: pointer;
+  background-color: #182A42; /* Цвет кнопок */
+  color: #FFFFFF;
+  border: none;
+  border-radius: 5px;
+}
+
+.menu button.active {
+  background-color: #4caf50;
+  color: white;
 }
 
 .container {
@@ -29,11 +38,12 @@ body {
 
 #balance, #level {
   margin: 10px 0;
+  color: #FFFFFF; /* Цвет текста */
 }
 
 .progress-bar {
   width: 80%;
-  height: 20px;
+  height: 10px; /* Тонкость прогресс-бара */
   background-color: #ddd;
   border-radius: 10px;
   overflow: hidden;
@@ -44,7 +54,7 @@ body {
 .progress-bar-inner {
   height: 100%;
   width: 0%;
-  background-color: #4caf50;
+  background: linear-gradient(to right, #4caf50, #81c784); /* Градиент прогресс-бара */
   transition: width 0.5s;
   position: absolute;
   left: 0;
@@ -72,7 +82,13 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.menu button.active {
-  background-color: #4caf50;
-  color: white;
+.score-increment {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: #FFFFFF;
+  opacity: 0;
+  transition: opacity 0.5s, top 0.5s;
 }
