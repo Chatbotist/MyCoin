@@ -148,6 +148,7 @@ function incrementScore(event) {
   balance += 1;
   document.getElementById('balance').textContent = 'Баллы: ' + balance;
   updateProgressBar();
+  showScoreIncrement(event);
 }
 
 function updateProgressBar() {
@@ -216,4 +217,22 @@ function showTop() {
   document.getElementById('upButton').classList.remove('active');
   document.getElementById('taskButton').classList.remove('active');
   document.getElementById('topButton').classList.add('active');
+}
+
+function showScoreIncrement(event) {
+  const scoreIncrement = document.getElementById('scoreIncrement');
+  scoreIncrement.style.top = event.clientY + 'px';
+  scoreIncrement.style.left = event.clientX + 'px';
+  scoreIncrement.style.opacity = 1;
+  scoreIncrement.style.top = (event.clientY - 20) + 'px';
+
+  setTimeout(() => {
+    scoreIncrement.style.opacity = 0;
+  }, 500);
+}
+
+function vibrateOnClick() {
+  if (navigator.vibrate) {
+    navigator.vibrate(50);
+  }
 }
