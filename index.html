@@ -13,8 +13,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: url('LeadtexFon.png') no-repeat center center fixed;
-    background-size: cover;
+    background-color: #182A42; /* Фон приложения */
     color: white;
     overflow: hidden; /* Запрещаем прокрутку */
   }
@@ -89,7 +88,7 @@
   .menu {
     display: flex;
     justify-content: space-around;
-    background-color: transparent; /* Убираем белую обводку */
+    background-color: #2C2F36; /* Цвет фона меню */
     padding: 10px;
     position: absolute;
     top: 0;
@@ -109,8 +108,8 @@
   .menu button.active {
     background-color: #1F2126;
   }
-  .menu button:hover {
-    background-color: #3a3d44;
+  .menu button:hover, .menu button:active {
+    background-color: #1F2126;
   }
 </style>
 </head>
@@ -265,20 +264,20 @@ function setInitialBalance(initialBalance) {
 
 if (window.Telegram && window.Telegram.WebApp) {
   // Устанавливаем цвет фона веб-приложения
-  window.Telegram.WebApp.setBackgroundColor("#000000"); // Черный фон
+  window.Telegram.WebApp.setBackgroundColor("#2E3E54"); // Цвет фона приложения
 
   // Устанавливаем цвет заголовка веб-приложения
-  window.Telegram.WebApp.setHeaderColor("#FFFFFF"); // Белый заголовок
+  window.Telegram.WebApp.setHeaderColor("#182A42"); // Цвет заголовка
 
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-    if (initDataUnsafe && initDataUnsafe.user) {
+  if (initDataUnsafe && initDataUnsafe.user) {
     telegramId = initDataUnsafe.user.id;
     fetchInitialBalance(telegramId);
     window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
-      color: "rgb(77, 76, 76)",
+      color: "#2C2F36", // Цвет главной кнопки телеграм
       text_color: "#FFFFFF"
     });
     window.Telegram.WebApp.MainButton.show();
@@ -334,8 +333,12 @@ if (window.Telegram && window.Telegram.WebApp) {
   });
 
   // Проверка развертывания при загрузке страницы
+  var isExpanded = window.Telegram.WebApp.isExpanded;
+  console.log("Развернуто на весь экран:", isExpanded);
+
   var viewportHeight = window.Telegram.WebApp.viewportHeight;
   console.log("Высота видимой области:", viewportHeight);
+
   if (viewportHeight < window.innerHeight) {
     Telegram.WebApp.expand();
   }
