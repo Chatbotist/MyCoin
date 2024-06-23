@@ -190,7 +190,11 @@ document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
 document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
 
 // Загрузка состояния игры при загрузке страницы
-window.addEventListener('load', loadGameState);
+window.addEventListener('load', function() {
+  const coin = document.getElementById('coin');
+  coin.style.backgroundImage = 'url("LeadtexCoin.png")';
+  loadGameState();
+});
 
 // Блокировка закрытия окна смахиванием вниз и постоянное разворачивание
 if (window.Telegram && window.Telegram.WebApp) {
