@@ -1,3 +1,103 @@
+let balance = 0;
+let level = 1;
+let pointsToNextLevel = 1000;
+let coinImage = 'LeadtexCoin.png';
+let telegramId = null;
+
+function vibrateOnClick() {
+  if ("vibrate" in navigator) {
+    window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
+  }
+}
+
+function incrementScore(event) {
+  balance++;
+  document.getElementById('balance').textContent = 'Баллы: ' + balance;
+  showClickAnimation(event.clientX, event.clientY);
+  checkLevelUp();
+  updateProgressBar();
+  saveGameState();
+}
+
+function showClickAnimation(x, y) {
+  const clickText = document.createElement('div');
+  clickText.textContent = '+1';
+  clickText.className = 'click-animation';
+  clickText.style.left = `${x}px`;
+  clickText.style.top = `${y}px`;
+  document.body.appendChild(clickText);
+  setTimeout(() => {
+    clickText.remove();
+  }, 1000);
+}
+
+function checkLevelUp() {
+  if (balance >= pointsToNextLevel) {
+    level++;
+    balance = balance; // Баллы не обнуляются, продолжают копиться
+    pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
+    document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    updateProgressBar(true); // Обнуляем прогресс бар
+  }
+}
+
+function updateProgressBar(reset = false) {
+  const progress = reset ? 0 : Math.min((balance / pointsToNextLevel) * 100, 100);
+  document.getElementById('progress').style.width = progress + '%';
+}
+
+function showCoin() {
+  setActiveButton('coinButton');
+  alert('Coin button clicked');
+}
+
+function showUp() {
+  setActiveButton('upButton');
+  alert('Up button clicked');
+}
+
+function showTask() {
+  setActiveButton('taskButton');
+  alert('Task button clicked');
+}
+
+function showTop() {
+  setActiveButton('topButton');
+  alert('Top button clicked');
+}
+
+function setActiveButton(buttonId) {
+  document.querySelectorAll('.menu button').forEach(button => {
+    button.classList.remove('active');
+  });
+  document.getElementById(buttonId).classList.add('active');
+}
+
+function saveGameState() {
+  const gameState = {
+    balance: balance,
+    level: level,
+    pointsToNextLevel: pointsToNextLevel,
+    coinImage: coinImage
+  };
+  localStorage.setItem('gameState', JSON.stringify(gameState));
+}
+
+function loadGameState() {
+  const gameState = JSON.parse(localStorage.getItem('gameState'));
+  if (gameState) {
+    balance = gameState.balance;
+    level = gameState.level;
+    pointsToNextLevel = gameState.pointsToNextLevel;
+    coinImage = gameState.coinImage;
+    document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('coin').style.backgroundImage = `url(${coinImage})`;
+    updateProgressBar();
+  }
+}
+
 function fetchInitialBalance(telegramId) {
   const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
 
@@ -90,11 +190,7 @@ document.getElementById('coin').addEventListener('mousedown', handleMouseDown);
 document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
 
 // Загрузка состояния игры при загрузке страницы
-window.addEventListener('load', function() {
-  const coin = document.getElementById('coin');
-  coin.style.backgroundImage = 'url("LeadtexCoin.png")';
-  loadGameState();
-});
+window.addEventListener('load', loadGameState);
 
 // Блокировка закрытия окна смахиванием вниз и постоянное разворачивание
 if (window.Telegram && window.Telegram.WebApp) {
@@ -139,100 +235,3 @@ function resizeGame() {
 
 window.addEventListener('resize', resizeGame);
 resizeGame();
-
-let balance = 0;
-let level = 1;
-const progressElement = document.getElementById('progress');
-
-function incrementScore(event) {
-  balance += 1;
-  document.getElementById('balance').textContent = 'Баллы: ' + balance;
-  updateProgressBar();
-  showScoreIncrement(event);
-}
-
-function updateProgressBar() {
-  const progressPercentage = (balance % 100) / 100 * 100; // Примерный расчет прогресса
-  progressElement.style.width = progressPercentage + '%';
-  if (progressPercentage === 100) {
-    levelUp();
-  }
-}
-
-function levelUp() {
-  level += 1;
-  document.getElementById('level').textContent = 'Уровень: ' + level;
-  balance = 0; // Сбрасываем баланс после повышения уровня
-  updateProgressBar();
-}
-
-function loadGameState() {
-  const savedBalance = localStorage.getItem('balance');
-  const savedLevel = localStorage.getItem('level');
-  if (savedBalance !== null) {
-    balance = parseInt(savedBalance, 10);
-    document.getElementById('balance').textContent = 'Баллы: ' + balance;
-  }
-  if (savedLevel !== null) {
-    level = parseInt(savedLevel, 10);
-    document.getElementById('level').textContent = 'Уровень: ' + level;
-  }
-  updateProgressBar();
-}
-
-function saveGameState() {
-  localStorage.setItem('balance', balance);
-  localStorage.setItem('level', level);
-}
-
-window.addEventListener('beforeunload', saveGameState);
-
-function showCoin() {
-  document.getElementById('coin').style.display = 'block';
-  document.getElementById('coinButton').classList.add('active');
-  document.getElementById('upButton').classList.remove('active');
-  document.getElementById('taskButton').classList.remove('active');
-  document.getElementById('topButton').classList.remove('active');
-}
-
-function showUp() {
-  document.getElementById('coin').style.display = 'none';
-  document.getElementById('coinButton').classList.remove('active');
-  document.getElementById('upButton').classList.add('active');
-  document.getElementById('taskButton').classList.remove('active');
-  document.getElementById('topButton').classList.remove('active');
-}
-
-function showTask() {
-  document.getElementById('coin').style.display = 'none';
-  document.getElementById('coinButton').classList.remove('active');
-  document.getElementById('upButton').classList.remove('active');
-  document.getElementById('taskButton').classList.add('active');
-  document.getElementById('topButton').classList.remove('active');
-}
-
-function showTop() {
-  document.getElementById('coin').style.display = 'none';
-  document.getElementById('coinButton').classList.remove('active');
-  document.getElementById('upButton').classList.remove('active');
-  document.getElementById('taskButton').classList.remove('active');
-  document.getElementById('topButton').classList.add('active');
-}
-
-function showScoreIncrement(event) {
-  const scoreIncrement = document.getElementById('scoreIncrement');
-  scoreIncrement.style.top = event.clientY + 'px';
-  scoreIncrement.style.left = event.clientX + 'px';
-  scoreIncrement.style.opacity = 1;
-  scoreIncrement.style.top = (event.clientY - 20) + 'px';
-
-  setTimeout(() => {
-    scoreIncrement.style.opacity = 0;
-  }, 500);
-}
-
-function vibrateOnClick() {
-  if (navigator.vibrate) {
-    navigator.vibrate(50);
-  }
-}
