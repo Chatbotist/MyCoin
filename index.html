@@ -68,6 +68,7 @@
     color: white;
     animation: fadeUp 2s ease-out forwards;
     pointer-events: none;
+    z-index: 30; /* Подняли на самый верхний слой */
   }
 
   @keyframes fadeUp {
@@ -201,14 +202,26 @@
 
   function showUp() {
     setActiveButton('upButton');
+    Telegram.WebApp.showPopup({
+      message: "Этот раздел в разработке!",
+      buttons: [{ text: "OK", type: "close" }]
+    });
   }
 
   function showTask() {
     setActiveButton('taskButton');
+    Telegram.WebApp.showPopup({
+      message: "Этот раздел в разработке!",
+      buttons: [{ text: "OK", type: "close" }]
+    });
   }
 
   function showTop() {
     setActiveButton('topButton');
+    Telegram.WebApp.showPopup({
+      message: "Этот раздел в разработке!",
+      buttons: [{ text: "OK", type: "close" }]
+    });
   }
 
   function setActiveButton(buttonId) {
