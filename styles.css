@@ -66,3 +66,13 @@ body {
   display: block; /* Убедимся, что элемент отображается */
   z-index: 10; /* Убедимся, что элемент находится над другими элементами */
 }
+
+.coin.active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.menu button.active {
+  background-color: #4caf50;
+  color: white;
+}
