@@ -35,7 +35,7 @@ body {
   outline: none;
   -webkit-tap-highlight-color: transparent;
   border-radius: 50%;
-  display: block; /* Добавим это свойство, чтобы убедиться, что элемент отображается */
+  display: block; /* Убедимся, что элемент отображается */
 }
 
 .coin.active {
@@ -77,9 +77,8 @@ body {
   border-radius: 10px;
   margin: 10px auto;
   overflow: hidden;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
 }
 
 .progress-bar-inner {
