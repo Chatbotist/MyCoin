@@ -16,12 +16,17 @@
     background: url('LeadtexFon.png') no-repeat center center fixed;
     background-size: cover;
     color: white;
+    overflow: hidden; /* Запрещаем прокрутку */
   }
   .container {
     position: relative;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .hamster {
     width: 300px;
@@ -64,9 +69,6 @@
       transform: translateY(-50px);
     }
   }
-  .shop {
-    display: none; /* Убираем старый магазин */
-  }
   .progress-bar {
     width: 80%;
     height: 10px; /* В два раза тоньше */
@@ -74,6 +76,9 @@
     border-radius: 10px;
     margin: 10px auto;
     overflow: hidden;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
   }
   .progress-bar-inner {
     height: 100%;
@@ -260,18 +265,18 @@ function setInitialBalance(initialBalance) {
 
 if (window.Telegram && window.Telegram.WebApp) {
   // Устанавливаем цвет фона веб-приложения
-  window.Telegram.WebApp.setBackgroundColor("#FFFFFF"); // Белый фон
+  window.Telegram.WebApp.setBackgroundColor("#000000"); // Черный фон
 
   // Устанавливаем цвет заголовка веб-приложения
-  window.Telegram.WebApp.setHeaderColor("#000000"); // Черный заголовок
+  window.Telegram.WebApp.setHeaderColor("#FFFFFF"); // Белый заголовок
 
   Telegram.WebApp.expand();
   Telegram.WebApp.enableClosingConfirmation();
   const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-  if (initDataUnsafe && initDataUnsafe.user) {
+    if (initDataUnsafe && initDataUnsafe.user) {
     telegramId = initDataUnsafe.user.id;
     fetchInitialBalance(telegramId);
-       window.Telegram.WebApp.MainButton.setParams({
+    window.Telegram.WebApp.MainButton.setParams({
       text: "Закрыть",
       color: "rgb(77, 76, 76)",
       text_color: "#FFFFFF"
@@ -335,6 +340,30 @@ if (window.Telegram && window.Telegram.WebApp) {
     Telegram.WebApp.expand();
   }
 }
+
+// Запрещаем увеличение масштаба жестами
+document.addEventListener('gesturestart', function(event) {
+  event.preventDefault();
+});
+
+// Автоматическая адаптация под любой экран, с сохранением пропорций
+function resizeGame() {
+  const container = document.querySelector('.container');
+  const aspectRatio = 16 / 9; // Примерное соотношение сторон
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+
+  if (windowWidth / windowHeight < aspectRatio) {
+    container.style.width = '100%';
+    container.style.height = 'auto';
+  } else {
+    container.style.width = 'auto';
+    container.style.height = '100%';
+  }
+}
+
+window.addEventListener('resize', resizeGame);
+resizeGame();
 </script>
 </body>
 </html>
