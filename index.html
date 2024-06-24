@@ -78,7 +78,7 @@
     position: absolute;
     font-size: 36px;
     color: white;
-    animation: fadeUp 1s ease-out forwards;
+    animation: fadeUp 0.5s ease-out forwards;
     pointer-events: none;
     z-index: 30;
   }
@@ -143,23 +143,87 @@
   .menu button:hover, .menu button:active {
     background-color: #1F2126;
   }
+
+  .section {
+    display: none;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  .section-title {
+    margin-top: 60px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    background-color: rgba(44, 47, 54, 0.8);
+    border-radius: 10px;
+    margin: 5px 5px 5px 5px;
+    padding: 10px;
+    color: white;
+    width: calc(100% - 10px);
+  }
+
+  .ranking-item img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+
+  .ranking-item .info {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .ranking-item .info .name {
+    font-size: 18px;
+  }
+
+  .ranking-item .info .followers {
+    font-size: 16px;
+    color: #FFD700;
+  }
+
+  .ranking-item .rank {
+    font-size: 24px;
+    margin-left: 10px;
+  }
 </style>
 </head>
 <body>
 <div class="menu">
-  <button id="coinButton" class="active" onclick="showCoin()">Coin</button>
-  <button id="upButton" onclick="showUp()">Up</button>
-  <button id="taskButton" onclick="showTask()">Task</button>
-  <button id="topButton" onclick="showTop()">Top</button>
+  <button id="coinButton" class="active" onclick="showSection('coinSection')">Coin</button>
+  <button id="upButton" onclick="showSection('upSection')">Up</button>
+  <button id="taskButton" onclick="showSection('taskSection')">Tasks</button>
+  <button id="topButton" onclick="showSection('topSection')">Top</button>
 </div>
-<div class="container" id="gameContainer">
-  <div id="balance">0</div>
-  <div id="level">Уровень: 1</div>
-  <div id="developers">Разработчики: 0</div>
-  <div class="progress-bar">
-    <div class="progress-bar-inner" id="progress"></div>
+<div class="container">
+  <div id="coinSection" class="section active">
+    <div id="balance">0</div>
+    <div id="level">Уровень: 1</div>
+    <div id="developers">Разработчики: 0</div>
+    <div class="progress-bar">
+      <div class="progress-bar-inner" id="progress"></div>
+    </div>
+    <div class="coin" id="coin"></div>
   </div>
-  <div class="coin" id="coin"></div>
+  <div id="upSection" class="section">
+    <h1>Up</h1>
+  </div>
+  <div id="taskSection" class="section">
+    <h1>Tasks</h1>
+  </div>
+  <div id="topSection" class="section">
+    <div class="section-title" style="margin-top: 10px;">Top Players</div>
+    <div id="ranking"></div>
+  </div>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
@@ -167,7 +231,6 @@
   let level = 1;
   let pointsToNextLevel = 1000;
   let developers = 0;
-  let coinImage = 'LeadtexCoin.png';
   let telegramId = null;
 
   function vibrateOnClick() {
@@ -194,7 +257,7 @@
     document.body.appendChild(clickText);
     setTimeout(() => {
       clickText.remove();
-    }, 1000);
+    }, 500);
   }
 
   function checkLevelUp() {
@@ -211,36 +274,16 @@
     document.getElementById('progress').style.width = progress + '%';
   }
 
-  function showCoin() {
-    setActiveButton('coinButton');
-    document.getElementById('gameContainer').style.display = 'flex';
-  }
-
-  function showUp() {
-    setActiveButton('upButton');
-    hideGameElements();
-    Telegram.WebApp.showPopup({
-      message: "Этот раздел в разработке!",
-      buttons: [{ text: "OK", type: "close" }]
+  function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+      section.classList.remove('active');
     });
-  }
-
-  function showTask() {
-    setActiveButton('taskButton');
-    hideGameElements();
-    Telegram.WebApp.showPopup({
-      message: "Этот раздел в разработке!",
-      buttons: [{ text: "OK", type: "close" }]
-    });
-  }
-
-  function showTop() {
-    setActiveButton('topButton');
-    hideGameElements();
-    Telegram.WebApp.showPopup({
-      message: "Этот раздел в разработке!",
-      buttons: [{ text: "OK", type: "close" }]
-    });
+    document.getElementById(sectionId).classList.add('active');
+    setActiveButton(sectionId + 'Button');
+    if (sectionId === 'topSection') {
+      fetchPlayerRanking();
+    }
   }
 
   function setActiveButton(buttonId) {
@@ -250,16 +293,11 @@
     document.getElementById(buttonId).classList.add('active');
   }
 
-  function hideGameElements() {
-    document.getElementById('gameContainer').style.display = 'none';
-  }
-
   function saveGameState() {
     const gameState = {
       balance: balance,
       level: level,
       pointsToNextLevel: pointsToNextLevel,
-      coinImage: coinImage,
       developers: developers
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
@@ -271,13 +309,66 @@
       balance = gameState.balance;
       level = gameState.level;
       pointsToNextLevel = gameState.pointsToNextLevel;
-      coinImage = gameState.coinImage;
       developers = gameState.developers;
       document.getElementById('balance').textContent = balance;
       document.getElementById('level').textContent = 'Уровень: ' + level;
       document.getElementById('developers').textContent = 'Разработчики: ' + developers;
       updateProgressBar();
     }
+  }
+
+  function fetchPlayerRanking() {
+    const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
+
+    fetch(webhookUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.data) {
+          const players = data.data;
+          displayRanking(players);
+        }
+      })
+      .catch(error => {
+        console.error('Ошибка при получении рейтинга:', error);
+      });
+  }
+
+  function displayRanking(players) {
+    const rankingContainer = document.getElementById('ranking');
+    rankingContainer.innerHTML = '';
+
+    players.sort((a, b) => b.balance - a.balance);
+
+    players.forEach((player, index) => {
+      const rankingItem = document.createElement('div');
+      rankingItem.className = 'ranking-item';
+
+      const playerInfo = document.createElement('div');
+      playerInfo.className = 'info';
+
+      const playerName = document.createElement('div');
+      playerName.className = 'name';
+      playerName.textContent = player.username;
+
+      const playerFollowers = document.createElement('div');
+      playerFollowers.className = 'followers';
+      playerFollowers.textContent = player.balance.toLocaleString();
+
+      const playerRank = document.createElement('div');
+      playerRank.className = 'rank';
+      playerRank.textContent = index + 1;
+
+      playerInfo.appendChild(playerName);
+      playerInfo.appendChild(playerFollowers);
+      rankingItem.appendChild(playerInfo);
+      rankingItem.appendChild(playerRank);
+
+      rankingItem.style.width = 'calc(100% - 10px)';
+      rankingItem.style.marginLeft = '5px';
+      rankingItem.style.marginRight = '5px';
+
+      rankingContainer.appendChild(rankingItem);
+    });
   }
 
   if (window.Telegram && window.Telegram.WebApp) {
@@ -359,7 +450,10 @@
   document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
   document.getElementById('coin').addEventListener('touchend', handleTouchEnd);
 
-  window.addEventListener('load', loadGameState);
+  window.addEventListener('load', () => {
+    loadGameState();
+    fetchPlayerRanking();
+  });
 
   // Запрещаем увеличение масштаба жестами
   document.addEventListener('gesturestart', function (event) {
@@ -400,12 +494,15 @@
     })
     .then(response => response.json())
     .then(data => {
-      if (data && data.data && data.data[0]) {
-        const initialBalance = data.data[0].balance !== undefined ? data.data[0].balance : 1;
-        const initialLevel = data.data[0].level !== undefined ? data.data[0].level : 1;
-        const initialDevelopers = data.data[0].developers !== undefined ? data.data[0].developers : 1;
-        
-        setInitialData(initialBalance, initialLevel, initialDevelopers);
+      if (data && data.data) {
+        const userData = data.data.find(user => user.telegramId === telegramId);
+        if (userData) {
+          const initialBalance = userData.balance !== undefined ? userData.balance : 1;
+          const initialLevel = userData.level !== undefined ? userData.level : 1;
+          const initialDevelopers = userData.developers !== undefined ? userData.developers : 1;
+
+          setInitialData(initialBalance, initialLevel, initialDevelopers);
+        }
       }
     })
     .catch(error => {
