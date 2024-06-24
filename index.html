@@ -18,6 +18,7 @@
     color: white;
     overflow: hidden;
     position: relative;
+    user-select: none;
   }
 
   .container {
@@ -29,7 +30,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     z-index: 10;
+    user-select: none;
   }
 
   .coin {
@@ -54,21 +57,30 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   }
 
-  #balance, #level, #subscribers {
+  #balance, #level, #developers {
     position: relative;
     margin: 10px 0;
     font-size: 24px;
     z-index: 10;
     color: white;
+    text-align: left;
+    padding-left: 10px;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  #balance::before {
+    content: '💰';
+    margin-right: 10px;
   }
 
   .click-animation {
     position: absolute;
     font-size: 36px;
     color: white;
-    animation: fadeUp 1s ease-out forwards; /* Уменьшили длительность анимации в 2 раза */
+    animation: fadeUp 1s ease-out forwards;
     pointer-events: none;
-    z-index: 30; /* Подняли на самый верхний слой */
+    z-index: 30;
   }
 
   @keyframes fadeUp {
@@ -121,6 +133,7 @@
     flex: 1;
     height: 100%;
     margin: 0;
+    user-select: none;
   }
 
   .menu button.active {
@@ -140,9 +153,9 @@
   <button id="topButton" onclick="showTop()">Top</button>
 </div>
 <div class="container" id="gameContainer">
-  <div id="balance">Баллы: 0</div>
+  <div id="balance">0</div>
   <div id="level">Уровень: 1</div>
-  <div id="subscribers">Подписчики: 0</div>
+  <div id="developers">Разработчики: 0</div>
   <div class="progress-bar">
     <div class="progress-bar-inner" id="progress"></div>
   </div>
@@ -153,7 +166,7 @@
   let balance = 0;
   let level = 1;
   let pointsToNextLevel = 1000;
-  let subscribers = 0;
+  let developers = 0;
   let coinImage = 'LeadtexCoin.png';
   let telegramId = null;
 
@@ -165,7 +178,7 @@
 
   function incrementScore(x, y) {
     balance++;
-    document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    document.getElementById('balance').textContent = balance;
     showClickAnimation(x, y);
     checkLevelUp();
     updateProgressBar();
@@ -181,11 +194,11 @@
     document.body.appendChild(clickText);
     setTimeout(() => {
       clickText.remove();
-    }, 1000); // Уменьшили длительность анимации в 2 раза
+    }, 1000);
   }
 
   function checkLevelUp() {
-    if (subscribers >= pointsToNextLevel) {
+    if (developers >= pointsToNextLevel) {
       level++;
       pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
       document.getElementById('level').textContent = 'Уровень: ' + level;
@@ -194,7 +207,7 @@
   }
 
   function updateProgressBar(reset = false) {
-    const progress = reset ? 0 : Math.min((subscribers / pointsToNextLevel) * 100, 100);
+    const progress = reset ? 0 : Math.min((developers / pointsToNextLevel) * 100, 100);
     document.getElementById('progress').style.width = progress + '%';
   }
 
@@ -247,7 +260,7 @@
       level: level,
       pointsToNextLevel: pointsToNextLevel,
       coinImage: coinImage,
-      subscribers: subscribers
+      developers: developers
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
   }
@@ -259,10 +272,10 @@
       level = gameState.level;
       pointsToNextLevel = gameState.pointsToNextLevel;
       coinImage = gameState.coinImage;
-      subscribers = gameState.subscribers;
-      document.getElementById('balance').textContent = 'Баллы: ' + balance;
+      developers = gameState.developers;
+      document.getElementById('balance').textContent = balance;
       document.getElementById('level').textContent = 'Уровень: ' + level;
-      document.getElementById('subscribers').textContent = 'Подписчики: ' + subscribers;
+      document.getElementById('developers').textContent = 'Разработчики: ' + developers;
       updateProgressBar();
     }
   }
@@ -273,10 +286,10 @@
 
     Telegram.WebApp.expand();
     Telegram.WebApp.enableClosingConfirmation();
-    const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
-    if (initDataUnsafe && initDataUnsafe.user) {
-      telegramId = initDataUnsafe.user.id;
-      fetchInitialBalance(telegramId); // Получение начального баланса через вебхук
+    const initData = Telegram.WebApp.initDataUnsafe;
+    if (initData && initData.user) {
+      telegramId = initData.user.id;
+      fetchInitialData(telegramId); // Получение начальных данных через вебхук
       window.Telegram.WebApp.MainButton.setParams({
         text: "Сохранить результат",
         color: "#2C2F36",
@@ -284,12 +297,12 @@
       });
       window.Telegram.WebApp.MainButton.show();
       window.Telegram.WebApp.MainButton.onClick(function () {
-        const url = `https://app.leadteh.ru/w/bQ300?utm_campaign=${balance}`;
+        const url = `https://app.leadteh.ru/w/bQ300?balance=${balance}&developers=${developers}&level=${level}`;
         window.Telegram.WebApp.openLink(url);
         window.Telegram.WebApp.close();
       });
     } else {
-      console.error("initDataUnsafe.user is undefined");
+      console.error("initData.user is undefined");
     }
 
     // Добавляем обработчик события для отслеживания изменения размера окна
@@ -307,10 +320,12 @@
     const coin = document.getElementById('coin');
     const rect = coin.getBoundingClientRect();
     const touches = event.touches;
-    for (let i = 0; i < touches.length; i++) {
-      const touch = touches[i];
-      if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-        coin.classList.add('active');
+    if (touches.length <= 2) { // Отключаем обработку, если больше двух пальцев
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          coin.classList.add('active');
+        }
       }
     }
   }
@@ -320,14 +335,25 @@
     const coin = document.getElementById('coin');
     const rect = coin.getBoundingClientRect();
     const changedTouches = event.changedTouches;
-    for (let i = 0; i < changedTouches.length; i++) {
-      const touch = changedTouches[i];
-      if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-        incrementScore(touch.clientX, touch.clientY);
-        vibrateOnClick();
+    if (changedTouches.length <= 2) { // Отключаем обработку, если больше двух пальцев
+      for (let i = 0; i < changedTouches.length; i++) {
+        const touch = changedTouches[i];
+        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          incrementScore(touch.clientX, touch.clientY);
+          vibrateOnClick();
+        }
+      }
+      coin.classList.remove('active');
+    } else {
+      // Обработка для 3 и более пальцев
+      for (let i = 0; i < changedTouches.length; i++) {
+        const touch = changedTouches[i];
+        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          incrementScore(touch.clientX, touch.clientY);
+          vibrateOnClick();
+        }
       }
     }
-    coin.classList.remove('active');
   }
 
   document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
@@ -359,8 +385,8 @@
   window.addEventListener('resize', resizeGame);
   resizeGame();
 
-  // Функция для получения начального баланса пользователя из сервера через вебхук
-  function fetchInitialBalance(telegramId) {
+  // Функция для получения начальных данных пользователя из сервера через вебхук
+  function fetchInitialData(telegramId) {
     const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
 
     fetch(webhookUrl, {
@@ -374,9 +400,12 @@
     })
     .then(response => response.json())
     .then(data => {
-      if (data && data.data && data.data[0] && data.data[0].balance !== undefined) {
-        const initialBalance = data.data[0].balance;
-        setInitialBalance(initialBalance);
+      if (data && data.data && data.data[0]) {
+        const initialBalance = data.data[0].balance !== undefined ? data.data[0].balance : 1;
+        const initialLevel = data.data[0].level !== undefined ? data.data[0].level : 1;
+        const initialDevelopers = data.data[0].developers !== undefined ? data.data[0].developers : 1;
+        
+        setInitialData(initialBalance, initialLevel, initialDevelopers);
       }
     })
     .catch(error => {
@@ -384,9 +413,13 @@
     });
   }
 
-  function setInitialBalance(initialBalance) {
+  function setInitialData(initialBalance, initialLevel, initialDevelopers) {
     balance = initialBalance;
-    document.getElementById('balance').textContent = 'Баллы: ' + balance;
+    level = initialLevel;
+    developers = initialDevelopers;
+    document.getElementById('balance').textContent = balance;
+    document.getElementById('level').textContent = 'Уровень: ' + level;
+    document.getElementById('developers').textContent = 'Разработчики: ' + developers;
     updateProgressBar();
   }
 
