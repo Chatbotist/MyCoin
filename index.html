@@ -12,7 +12,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     background: url('LeadtexFon.png') no-repeat center center fixed;
     background-size: cover;
     color: white;
@@ -29,9 +29,10 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     z-index: 10;
+    padding-top: 60px; /* Отступ для верхнего меню */
     user-select: none;
   }
 
@@ -146,17 +147,32 @@
 
   .section {
     display: none;
+    flex-grow: 1;
+    width: 100%;
+    padding-top: 10px; /* Отступ для заголовков */
   }
 
   .section.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .section-title {
-    margin-top: 60px;
+    margin-top: 10px;
     margin-bottom: 10px;
     font-size: 24px;
     font-weight: bold;
+  }
+
+  .ranking-container {
+    flex-grow: 1;
+    overflow-y: auto; /* Включаем вертикальную прокрутку */
+    width: 100%;
+    max-height: calc(100vh - 100px); /* Устанавливаем максимальную высоту для контейнера */
+    padding: 10px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch; /* Добавляем плавную прокрутку для iOS */
   }
 
   .ranking-item {
@@ -164,10 +180,10 @@
     align-items: center;
     background-color: rgba(44, 47, 54, 0.8);
     border-radius: 10px;
-    margin: 5px 5px 5px 5px;
+    margin: 5px 0;
     padding: 10px;
     color: white;
-    width: calc(100% - 10px);
+    width: calc(100% - 20px);
   }
 
   .ranking-item img {
@@ -221,8 +237,8 @@
     <h1>Tasks</h1>
   </div>
   <div id="topSection" class="section">
-    <div class="section-title" style="margin-top: 10px;">Top Players</div>
-    <div id="ranking"></div>
+    <div class="section-title">Top Players</div>
+    <div class="ranking-container" id="ranking"></div>
   </div>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -235,7 +251,7 @@
 
   function vibrateOnClick() {
     if ("vibrate" in navigator) {
-      window.navigator.vibrate(100); // Короткая вибрация на 100 миллисекунд
+      window.navigator.vibrate(100);
     }
   }
 
@@ -252,8 +268,8 @@
     const clickText = document.createElement('div');
     clickText.textContent = '+1';
     clickText.className = 'click-animation';
-    clickText.style.left = `${x - 18}px`; // Смещение для центрирования текста
-    clickText.style.top = `${y - 50}px`; // Смещение для отображения над монетой
+    clickText.style.left = `${x - 18}px`;
+    clickText.style.top = `${y - 50}px`;
     document.body.appendChild(clickText);
     setTimeout(() => {
       clickText.remove();
@@ -318,7 +334,7 @@
   }
 
   function fetchPlayerRanking() {
-    const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
+    const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
 
     fetch(webhookUrl)
       .then(response => response.json())
@@ -339,7 +355,7 @@
 
     players.sort((a, b) => b.balance - a.balance);
 
-    players.forEach((player, index) => {
+    players.slice(0, 100).forEach((player, index) => {
       const rankingItem = document.createElement('div');
       rankingItem.className = 'ranking-item';
 
@@ -363,10 +379,6 @@
       rankingItem.appendChild(playerInfo);
       rankingItem.appendChild(playerRank);
 
-      rankingItem.style.width = 'calc(100% - 10px)';
-      rankingItem.style.marginLeft = '5px';
-      rankingItem.style.marginRight = '5px';
-
       rankingContainer.appendChild(rankingItem);
     });
   }
@@ -380,7 +392,7 @@
     const initData = Telegram.WebApp.initDataUnsafe;
     if (initData && initData.user) {
       telegramId = initData.user.id;
-      fetchInitialData(telegramId); // Получение начальных данных через вебхук
+      fetchInitialData(telegramId);
       window.Telegram.WebApp.MainButton.setParams({
         text: "Сохранить результат",
         color: "#2C2F36",
@@ -396,7 +408,6 @@
       console.error("initData.user is undefined");
     }
 
-    // Добавляем обработчик события для отслеживания изменения размера окна
     Telegram.WebApp.onEvent('viewportChanged', function(event) {
       if (event.isStateStable && !Telegram.WebApp.isExpanded) {
         Telegram.WebApp.expand();
@@ -411,7 +422,7 @@
     const coin = document.getElementById('coin');
     const rect = coin.getBoundingClientRect();
     const touches = event.touches;
-    if (touches.length <= 2) { // Отключаем обработку, если больше двух пальцев
+    if (touches.length <= 2) {
       for (let i = 0; i < touches.length; i++) {
         const touch = touches[i];
         if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
@@ -426,7 +437,7 @@
     const coin = document.getElementById('coin');
     const rect = coin.getBoundingClientRect();
     const changedTouches = event.changedTouches;
-    if (changedTouches.length <= 2) { // Отключаем обработку, если больше двух пальцев
+    if (changedTouches.length <= 2) {
       for (let i = 0; i < changedTouches.length; i++) {
         const touch = changedTouches[i];
         if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
@@ -436,7 +447,6 @@
       }
       coin.classList.remove('active');
     } else {
-      // Обработка для 3 и более пальцев
       for (let i = 0; i < changedTouches.length; i++) {
         const touch = changedTouches[i];
         if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
@@ -455,15 +465,13 @@
     fetchPlayerRanking();
   });
 
-  // Запрещаем увеличение масштаба жестами
   document.addEventListener('gesturestart', function (event) {
     event.preventDefault();
   });
 
-  // Автоматическая адаптация под любой экран, с сохранением пропорций
   function resizeGame() {
     const container = document.querySelector('.container');
-    const aspectRatio = 16 / 9; // Примерное соотношение сторон
+    const aspectRatio = 16 / 9;
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
@@ -479,9 +487,8 @@
   window.addEventListener('resize', resizeGame);
   resizeGame();
 
-  // Функция для получения начальных данных пользователя из сервера через вебхук
   function fetchInitialData(telegramId) {
-    const webhookUrl = 'https://hook.eu2.make.com/3cn7hflf2x478ihdcm38gjgw2rbu5ioa';
+    const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
 
     fetch(webhookUrl, {
       method: 'POST',
@@ -520,10 +527,8 @@
     updateProgressBar();
   }
 
-  // Сохранение состояния игры при закрытии приложения
   window.addEventListener('beforeunload', saveGameState);
 
-  // Автоматическое раскрытие окна на весь экран, если оно не на весь экран
   function ensureFullScreen() {
     if (!Telegram.WebApp.isExpanded) {
       Telegram.WebApp.expand();
@@ -532,6 +537,46 @@
 
   window.addEventListener('resize', ensureFullScreen);
   ensureFullScreen();
+
+  // Обработка прокрутки списка
+  const rankingContainer = document.getElementById('ranking');
+  rankingContainer.addEventListener('touchstart', function(event) {
+    startY = event.touches[0].pageY - rankingContainer.offsetTop;
+    scrollTop = rankingContainer.scrollTop;
+  });
+
+  rankingContainer.addEventListener('touchmove', function(event) {
+    const y = event.touches[0].pageY - rankingContainer.offsetTop;
+    const walk = (y - startY);
+    rankingContainer.scrollTop = scrollTop - walk;
+  });
+
+  // Магия документа/тела для предотвращения закрытия окна и улучшения прокрутки
+  const overflow = 100;
+  document.body.style.overflowY = 'hidden';
+  document.body.style.marginTop = `${overflow}px`;
+  document.body.style.height = window.innerHeight + overflow + "px";
+  document.body.style.paddingBottom = `${overflow}px`;
+  window.scrollTo(0, overflow);
+
+  // Блокировка touchmove для корректной работы прокрутки
+  let ts;
+  const onTouchStart = (e) => {
+    ts = e.touches[0].clientY;
+  };
+  const onTouchMove = (e) => {
+    if (scrollableEl) {
+      const scroll = scrollableEl.scrollTop;
+      const te = e.changedTouches[0].clientY;
+      if (scroll <= 0 && ts < te) {
+        e.preventDefault();
+      }
+    } else {
+      e.preventDefault();
+    }
+  };
+  document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false });
+  document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false });
 </script>
 </body>
 </html>
