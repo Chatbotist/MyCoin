@@ -548,32 +548,31 @@
   function fetchInitialData(telegramId) {
     const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
 
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json
-                },
-      body: JSON.stringify({
-        telegram_id: telegramId
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data && data.data) {
-        const userData = data.data.find(user => user.telegramId === telegramId);
-        if (userData) {
-          const initialBalance = userData.balance !== undefined ? userData.balance : 1;
-          const initialLevel = userData.level !== undefined ? userData.level : 1;
-          const initialDevelopers = userData.developers !== undefined ? userData.developers : 1;
+fetch(webhookUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    telegram_id: telegramId
+  })
+})
+.then(response => response.json())
+.then(data => {
+  if (data && data.data) {
+    const userData = data.data.find(user => user.telegramId === telegramId);
+    if (userData) {
+      const initialBalance = userData.balance !== undefined ? userData.balance : 1;
+      const initialLevel = userData.level !== undefined ? userData.level : 1;
+      const initialDevelopers = userData.developers !== undefined ? userData.developers : 1;
 
-          setInitialData(initialBalance, initialLevel, initialDevelopers);
-        }
-      }
-    })
-    .catch(error => {
-      console.error('Ошибка:', error);
-    });
+      setInitialData(initialBalance, initialLevel, initialDevelopers);
+    }
   }
+})
+.catch(error => {
+  console.error('Ошибка:', error);
+});
 
   function setInitialData(initialBalance, initialLevel, initialDevelopers) {
     balance = initialBalance;
