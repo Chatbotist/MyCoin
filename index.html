@@ -211,6 +211,14 @@ body {
   font-size: 24px;
   margin-left: 10px;
 }
+
+/* Добавим специальный стиль для iOS */
+@supports (-webkit-touch-callout: none) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
 </style>
 </head>
 <body>
