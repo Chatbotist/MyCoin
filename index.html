@@ -5,253 +5,212 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Coin Game</title>
 <style>
-  body {
-    text-align: center;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    background: url('LeadtexFon.png') no-repeat center center fixed;
-    background-size: cover;
-    color: white;
-    overflow: hidden;
-    position: relative;
-    user-select: none;
-  }
+body {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: url('LeadtexFon.png') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+}
 
-  .container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    z-index: 10;
-    padding-top: 60px; /* Отступ для верхнего меню */
-    user-select: none;
-  }
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 10;
+  padding-top: 60px; /* Отступ для верхнего меню */
+  user-select: none;
+}
 
-  .coin {
-    width: 300px;
-    height: 300px;
-    background: url('LeadtexCoin.png') no-repeat center center;
-    background-size: contain;
-    cursor: pointer;
-    margin: 70px auto 20px auto;
-    transition: transform 0.1s, box-shadow 0.1s;
-    user-select: none;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    border-radius: 50%;
-    display: block;
-    z-index: 20;
-    position: relative;
-  }
+.coin {
+  width: 300px;
+  height: 300px;
+  background: url('LeadtexCoin.png') no-repeat center center;
+  background-size: contain;
+  cursor: pointer;
+  margin: 70px auto 20px auto;
+  transition: transform 0.1s, box-shadow 0.1s;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  display: block;
+  z-index: 20;
+  position: relative;
+}
 
-  .coin.active {
-    transform: scale(0.95);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  }
+.coin.active {
+  transform: scale(0.95);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
 
-  #balance, #level, #developers {
-    position: relative;
-    margin: 10px 0;
-    font-size: 24px;
-    z-index: 10;
-    color: white;
-    text-align: left;
-    padding-left: 10px;
-    width: 100%;
-    max-width: 600px;
-  }
+#balance, #level, #developers {
+  position: relative;
+  margin: 10px 0;
+  font-size: 24px;
+  z-index: 10;
+  color: white;
+  text-align: left;
+  padding-left: 10px;
+  width: 100%;
+  max-width: 600px;
+}
 
-  #balance::before {
-    content: '💰';
-    margin-right: 10px;
-  }
+#balance::before {
+  content: '💰';
+  margin-right: 10px;
+}
 
-  .click-animation {
-    position: absolute;
-    font-size: 36px;
-    color: white;
-    animation: fadeUp 0.5s ease-out forwards;
-    pointer-events: none;
-    z-index: 30;
-  }
+.click-animation {
+  position: absolute;
+  font-size: 36px;
+  color: white;
+  animation: fadeUp 0.5s ease-out forwards;
+  pointer-events: none;
+  z-index: 30;
+}
 
-  @keyframes fadeUp {
-    0% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-100px);
-    }
+@keyframes fadeUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
   }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+}
 
-  .progress-bar {
-    width: 80%;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    margin: 10px auto;
-    overflow: hidden;
-    display: flex;
-    justify-content: flex-start;
-  }
+.progress-bar {
+  width: 80%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  margin: 10px auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+}
 
-  .progress-bar-inner {
-    height: 100%;
-    background: linear-gradient(to right, #00DE70, #0496BC);
-    width: 0;
-    transition: width 0.3s;
-  }
+.progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(to right, #00DE70, #0496BC);
+  width: 0;
+  transition: width 0.3s;
+}
 
-  .menu {
-    display: flex;
-    justify-content: space-between;
-    background-color: #2C2F36;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 50px;
-    z-index: 30;
-  }
+.menu {
+  display: flex;
+  justify-content: space-between;
+  background-color: #2C2F36;
+  padding: 0;
+  position: fixed; /* Изменено с absolute на fixed */
+  top: 0;
+  width: 100%;
+  height: 50px;
+  z-index: 30;
+}
 
-  .menu button {
-    background-color: #2C2F36;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    flex: 1;
-    height: 100%;
-    margin: 0;
-    user-select: none;
-  }
+.menu button {
+  background-color: #2C2F36;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  flex: 1;
+  height: 100%;
+  margin: 0;
+  user-select: none;
+}
 
-  .menu button.active {
-    background-color: #1F2126;
-  }
+.menu button.active {
+  background-color: #1F2126;
+}
 
-  .menu button:hover, .menu button:active {
-    background-color: #1F2126;
-  }
+.menu button:hover, .menu button:active {
+  background-color: #1F2126;
+}
 
-  .section {
-    display: none;
-    flex-grow: 1;
-    width: 100%;
-    padding-top: 10px; /* Отступ для заголовков */
-  }
+.section {
+  display: none;
+  flex-grow: 1;
+  width: 100%;
+  padding-top: 10px; /* Отступ для заголовков */
+}
 
-  .section.active {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.section.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .section-title {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 24px;
-    font-weight: bold;
-  }
+.section-title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
 
-  .ranking-container {
-    flex-grow: 1;
-    overflow-y: auto; /* Включаем вертикальную прокрутку */
-    width: 100%;
-    max-height: calc(100vh - 100px); /* Устанавливаем максимальную высоту для контейнера */
-    padding: 10px;
-    box-sizing: border-box;
-    -webkit-overflow-scrolling: touch; /* Добавляем плавную прокрутку для iOS */
-  }
+.ranking-container {
+  flex-grow: 1;
+  overflow-y: auto; /* Включаем вертикальную прокрутку */
+  width: 100%;
+  max-height: calc(100vh - 100px); /* Устанавливаем максимальную высоту для контейнера */
+  padding: 10px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* Добавляем плавную прокрутку для iOS */
+}
 
-  .ranking-item {
-    display: flex;
-    align-items: center;
-    background-color: rgba(44, 47, 54, 0.8);
-    border-radius: 10px;
-    margin: 5px 0;
-    padding: 10px;
-    color: white;
-    width: calc(100% - 20px);
-  }
+.ranking-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(44, 47, 54, 0.8);
+  border-radius: 10px;
+  margin: 5px 0;
+  padding: 10px;
+  color: white;
+  width: calc(100% - 20px);
+}
 
-  .ranking-item img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-  }
+.ranking-item img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
 
-  .ranking-item .info {
-    flex-grow: 1;
-    text-align: left;
-  }
+.ranking-item .info {
+  flex-grow: 1;
+  text-align: left;
+}
 
-  .ranking-item .info .name {
-    font-size: 18px;
-  }
+.ranking-item .info .name {
+  font-size: 18px;
+}
 
-  .ranking-item .info .followers {
-    font-size: 16px;
-    color: #FFD700;
-  }
+.ranking-item .info .followers {
+  font-size: 16px;
+  color: #FFD700;
+}
 
-  .ranking-item .rank {
-    font-size: 24px;
-    margin-left: 10px;
-  }
-
-  .fixed-player-info {
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
-    border-radius: 10px;
-    margin: 5px 0;
-    padding: 10px;
-    color: white;
-    width: calc(100% - 20px);
-    position: sticky;
-    top: 50px; /* Отступ от верхнего меню */
-    z-index: 40;
-  }
-
-  .fixed-player-info img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-  }
-
-  .fixed-player-info .info {
-    flex-grow: 1;
-    text-align: left;
-  }
-
-  .fixed-player-info .info .name {
-    font-size: 18px;
-  }
-
-  .fixed-player-info .info .followers {
-    font-size: 16px;
-    color: #FFD700;
-  }
-
-  .fixed-player-info .rank {
-    font-size: 24px;
-    margin-left: 10px;
-  }
+.ranking-item .rank {
+  font-size: 24px;
+  margin-left: 10px;
+}
 </style>
 </head>
 <body>
@@ -279,14 +238,6 @@
   </div>
   <div id="topSection" class="section">
     <div class="section-title">Top Players</div>
-    <div class="fixed-player-info" id="fixedPlayerInfo">
-      <img src="" alt="Player Avatar" id="fixedPlayerAvatar">
-      <div class="info">
-        <div class="name" id="fixedPlayerName">Player</div>
-        <div class="followers" id="fixedPlayerBalance">0</div>
-      </div>
-      <div class="rank" id="fixedPlayerRank">1</div>
-    </div>
     <div class="ranking-container" id="ranking"></div>
   </div>
 </div>
@@ -430,15 +381,6 @@
 
       rankingContainer.appendChild(rankingItem);
     });
-
-    // Обновляем фиксированную плашку с данными игрока
-    if (players.length > 0) {
-      const topPlayer = players[0];
-      document.getElementById('fixedPlayerAvatar').src = topPlayer.avatar; // Убедитесь, что у вас есть URL аватара
-      document.getElementById('fixedPlayerName').textContent = topPlayer.username;
-      document.getElementById('fixedPlayerBalance').textContent = topPlayer.balance.toLocaleString();
-      document.getElementById('fixedPlayerRank').textContent = '1';
-    }
   }
 
   if (window.Telegram && window.Telegram.WebApp) {
@@ -548,31 +490,32 @@
   function fetchInitialData(telegramId) {
     const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
 
-fetch(webhookUrl, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    telegram_id: telegramId
-  })
-})
-.then(response => response.json())
-.then(data => {
-  if (data && data.data) {
-    const userData = data.data.find(user => user.telegramId === telegramId);
-    if (userData) {
-      const initialBalance = userData.balance !== undefined ? userData.balance : 1;
-      const initialLevel = userData.level !== undefined ? userData.level : 1;
-      const initialDevelopers = userData.developers !== undefined ? userData.developers : 1;
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        telegram_id: telegramId
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.data) {
+        const userData = data.data.find(user => user.telegramId === telegramId);
+        if (userData) {
+          const initialBalance = userData.balance !== undefined ? userData.balance : 1;
+          const initialLevel = userData.level !== undefined ? userData.level : 1;
+          const initialDevelopers = userData.developers !== undefined ? userData.developers : 1;
 
-      setInitialData(initialBalance, initialLevel, initialDevelopers);
-    }
+          setInitialData(initialBalance, initialLevel, initialDevelopers);
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+    });
   }
-})
-.catch(error => {
-  console.error('Ошибка:', error);
-});
 
   function setInitialData(initialBalance, initialLevel, initialDevelopers) {
     balance = initialBalance;
