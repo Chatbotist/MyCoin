@@ -247,7 +247,9 @@
 <body>
   <div class="menu">
     <button id="topSectionButton" onclick="showSection('topSection')">Top</button>
-    <button id="gameSectionButton" onclick="showSection('gameSection')">Game</button>
+    <button id="gameSectionButton" onclick="showSection('gameSection')">Coin</button>
+    <button id="tasksSectionButton" onclick="showSection('tasksSection')">Tasks</button>
+    <button id="upSectionButton" onclick="showSection('upSection')">Up</button>
   </div>
   <div class="container">
     <div id="topSection" class="section">
@@ -262,7 +264,15 @@
         <div class="progress-bar-inner" id="progressBar"></div>
       </div>
       <div class="coin" id="coin"></div>
-      <div id="developers">Разработчик: Leadtex</div>
+      <div id="developers">Разработчики: 0</div>
+    </div>
+    <div id="tasksSection" class="section">
+      <div class="section-title">Tasks</div>
+      <!-- Содержимое раздела Tasks -->
+    </div>
+    <div id="upSection" class="section">
+      <div class="section-title">Up</div>
+      <!-- Содержимое раздела Up -->
     </div>
   </div>
 
@@ -270,9 +280,11 @@
     let balance = 0;
     let level = 1;
     let progress = 0;
+    let developers = 0;
     const progressBar = document.getElementById('progressBar');
     const balanceElement = document.getElementById('balance');
     const levelElement = document.getElementById('level');
+    const developersElement = document.getElementById('developers');
     const coin = document.getElementById('coin');
     const telegramId = 'YOUR_TELEGRAM_ID'; // Замените на реальный Telegram ID
 
@@ -283,7 +295,9 @@
       if (progress >= 100) {
         level += 1;
         progress = 0;
+        developers += 1;
         levelElement.textContent = `Уровень: ${level}`;
+        developersElement.textContent = `Разработчики: ${developers}`;
       }
       progressBar.style.width = `${progress}%`;
       showClickAnimation();
@@ -294,6 +308,9 @@
       animation.className = 'click-animation';
       animation.textContent = '+1';
       document.body.appendChild(animation);
+      const rect = coin.getBoundingClientRect();
+      animation.style.left = `${rect.left + rect.width / 2}px`;
+      animation.style.top = `${rect.top + rect.height / 2}px`;
       setTimeout(() => {
         document.body.removeChild(animation);
       }, 500);
