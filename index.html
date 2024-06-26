@@ -211,6 +211,47 @@
     font-size: 24px;
     margin-left: 10px;
   }
+
+  .fixed-player-info {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    border-radius: 10px;
+    margin: 5px 0;
+    padding: 10px;
+    color: white;
+    width: calc(100% - 20px);
+    position: sticky;
+    top: 50px; /* Отступ от верхнего меню */
+    z-index: 40;
+  }
+
+  .fixed-player-info img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+
+  .fixed-player-info .info {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .fixed-player-info .info .name {
+    font-size: 18px;
+  }
+
+  .fixed-player-info .info .followers {
+    font-size: 16px;
+    color: #FFD700;
+  }
+
+  .fixed-player-info .rank {
+    font-size: 24px;
+    margin-left: 10px;
+  }
 </style>
 </head>
 <body>
@@ -238,6 +279,14 @@
   </div>
   <div id="topSection" class="section">
     <div class="section-title">Top Players</div>
+    <div class="fixed-player-info" id="fixedPlayerInfo">
+      <img src="" alt="Player Avatar" id="fixedPlayerAvatar">
+      <div class="info">
+        <div class="name" id="fixedPlayerName">Player</div>
+        <div class="followers" id="fixedPlayerBalance">0</div>
+      </div>
+      <div class="rank" id="fixedPlayerRank">1</div>
+    </div>
     <div class="ranking-container" id="ranking"></div>
   </div>
 </div>
@@ -381,6 +430,15 @@
 
       rankingContainer.appendChild(rankingItem);
     });
+
+    // Обновляем фиксированную плашку с данными игрока
+    if (players.length > 0) {
+      const topPlayer = players[0];
+      document.getElementById('fixedPlayerAvatar').src = topPlayer.avatar; // Убедитесь, что у вас есть URL аватара
+      document.getElementById('fixedPlayerName').textContent = topPlayer.username;
+      document.getElementById('fixedPlayerBalance').textContent = topPlayer.balance.toLocaleString();
+      document.getElementById('fixedPlayerRank').textContent = '1';
+    }
   }
 
   if (window.Telegram && window.Telegram.WebApp) {
@@ -493,8 +551,8 @@
     fetch(webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json
+                },
       body: JSON.stringify({
         telegram_id: telegramId
       })
