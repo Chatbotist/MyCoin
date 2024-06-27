@@ -1,161 +1,120 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Wheel of Fortune</title>
-<style>
-  body {
-    text-align: center;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    background: url('LeadtexFon.png') no-repeat center center fixed;
-    background-size: cover;
-    color: white;
-    overflow: hidden;
-    position: relative;
-    user-select: none;
-  }
-
-  .container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    z-index: 10;
-    padding-top: 60px; /* Отступ для верхнего меню */
-    user-select: none;
-  }
-
-  .wheel {
-    width: 300px;
-    height: 300px;
-    background: url('wheel.png') no-repeat center center;
-    background-size: contain;
-    margin: 70px auto 20px auto;
-    transition: transform 4s ease-out;
-    user-select: none;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    border-radius: 50%;
-    display: block;
-    z-index: 20;
-    position: relative;
-  }
-
-  .button {
-    padding: 10px 20px;
-    font-size: 18px;
-    margin: 10px;
-    cursor: pointer;
-    background-color: #2C2F36;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-  }
-
-  .button:hover {
-    background-color: #1F2126;
-  }
-
-  .button:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-  }
-
-  #balance {
-    position: relative;
-    margin: 10px 0;
-    font-size: 24px;
-    z-index: 10;
-    color: white;
-    text-align: left;
-    padding-left: 10px;
-    width: 100%;
-    max-width: 600px;
-  }
-
-  #balance::before {
-    content: '💰';
-    margin-right: 10px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Колесо Фортуны</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid #333;
+            position: relative;
+            overflow: hidden;
+            transform: rotate(0deg);
+            transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+        .wheel:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .slice {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background-color: transparent;
+            transform-origin: 100% 100%;
+        }
+        .slice:nth-child(1) { background-color: #f44336; transform: rotate(0deg); }
+        .slice:nth-child(2) { background-color: #ffeb3b; transform: rotate(60deg); }
+        .slice:nth-child(3) { background-color: #4caf50; transform: rotate(120deg); }
+        .slice:nth-child(4) { background-color: #2196f3; transform: rotate(180deg); }
+        .slice:nth-child(5) { background-color: #9c27b0; transform: rotate(240deg); }
+        .slice:nth-child(6) { background-color: #ff9800; transform: rotate(300deg); }
+        .slice span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            color: #fff;
+            font-size: 24px;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div id="balance">0</div>
-  <div class="wheel" id="wheel"></div>
-  <button class="button" id="spinButton" onclick="spinWheel()">Крутить</button>
-  <button class="button" id="claimButton" style="display: none;" onclick="claimPrize()">Забрать подарок</button>
-</div>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  let balance = 0;
-  let spinning = false;
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <div class="slice"><span>1</span></div>
+            <div class="slice"><span>2</span></div>
+            <div class="slice"><span>3</span></div>
+            <div class="slice"><span>4</span></div>
+            <div class="slice"><span>5</span></div>
+            <div class="slice"><span>6</span></div>
+        </div>
+    </div>
+    <div class="button-container">
+        <button id="spinButton">Крутить</button>
+        <button id="claimButton" style="display: none;">Забрать подарок</button>
+    </div>
 
-  function spinWheel() {
-    if (spinning) return;
-    spinning = true;
-    document.getElementById('spinButton').style.display = 'none';
-    const wheel = document.getElementById('wheel');
-    const degrees = Math.floor(Math.random() * 3600) + 360; // Random spin
-    wheel.style.transform = `rotate(${degrees}deg)`;
-    setTimeout(() => {
-      spinning = false;
-      document.getElementById('claimButton').style.display = 'block';
-    }, 4000); // Duration of spin
-  }
+    <script>
+        const wheel = document.getElementById('wheel');
+        const spinButton = document.getElementById('spinButton');
+        const claimButton = document.getElementById('claimButton');
 
-  function claimPrize() {
-    balance += Math.floor(Math.random() * 100) + 1; // Random prize
-    document.getElementById('balance').textContent = balance;
-    document.getElementById('claimButton').style.display = 'none';
-    document.getElementById('spinButton').style.display = 'block';
-  }
+        spinButton.addEventListener('click', () => {
+            const randomDegree = Math.floor(Math.random() * 360) + 720; // Вращаем минимум на 2 оборота
+            wheel.style.transform = `rotate(${randomDegree}deg)`;
 
-  // Telegram Web App integration
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.setBackgroundColor("#2E3E54");
-    window.Telegram.WebApp.setHeaderColor("#182A42");
+            spinButton.style.display = 'none';
+            setTimeout(() => {
+                claimButton.style.display = 'block';
+            }, 4000); // Время вращения колеса
+        });
 
-    Telegram.WebApp.expand();
-    Telegram.WebApp.enableClosingConfirmation();
-    const initData = Telegram.WebApp.initDataUnsafe;
-    if (initData && initData.user) {
-      telegramId = initData.user.id;
-      window.Telegram.WebApp.MainButton.setParams({
-        text: "Сохранить результат",
-        color: "#2C2F36",
-        text_color: "#FFFFFF"
-      });
-      window.Telegram.WebApp.MainButton.show();
-      window.Telegram.WebApp.MainButton.onClick(function () {
-        const url = `https://app.leadteh.ru/w/bQ300?balance=${balance}`;
-        window.Telegram.WebApp.openLink(url);
-        window.Telegram.WebApp.close();
-      });
-    } else {
-      console.error("initData.user is undefined");
-    }
+        claimButton.addEventListener('click', () => {
+            alert('Поздравляем! Вы забрали подарок!');
+        });
 
-    Telegram.WebApp.onEvent('viewportChanged', function(event) {
-      if (event.isStateStable && !Telegram.WebApp.isExpanded) {
-        Telegram.WebApp.expand();
-      }
-    });
-  } else {
-    console.error("Telegram Web App not detected");
-  }
-</script>
+        // Защита от закрытия приложения с помощью магии
+        window.addEventListener('beforeunload', (event) => {
+            event.preventDefault();
+            event.returnValue = '';
+        });
+
+        // Инициализация Telegram Web Apps
+        Telegram.WebApp.ready();
+    </script>
 </body>
 </html>
