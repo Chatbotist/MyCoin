@@ -559,24 +559,54 @@
 
   // Обработка прокрутки списка
   const rankingContainer = document.getElementById('ranking');
-    rankingContainer.addEventListener('scroll', () => {
-    const { scrollTop, scrollHeight, clientHeight } = rankingContainer;
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-      // Достигнут конец списка, можно загрузить больше данных, если необходимо
-      // Например, можно вызвать функцию для подгрузки дополнительных игроков
-    }
+  rankingContainer.addEventListener('touchstart', function(event) {
+    startY = event.touches[0].pageY - rankingContainer.offsetTop;
+    scrollTop = rankingContainer.scrollTop;
   });
 
-  // Обработка кликов по элементам списка
-  rankingContainer.addEventListener('click', (event) => {
-    const rankingItem = event.target.closest('.ranking-item');
-    if (rankingItem) {
-      const playerName = rankingItem.querySelector('.name').textContent;
-      alert(`Вы выбрали игрока: ${playerName}`);
-      // Можно добавить дополнительные действия при выборе игрока
+  rankingContainer.addEventListener('touchmove', function(event) {
+    const y = event.touches[0].pageY - rankingContainer.offsetTop;
+    const walk = (y - startY);
+    rankingContainer.scrollTop = scrollTop - walk;
+  });
+
+  // Магия документа/тела для предотвращения закрытия окна и улучшения прокрутки
+  const overflow = 100;
+  document.body.style.overflowY = 'hidden';
+  document.body.style.marginTop = `${overflow}px`;
+  document.body.style.height = window.innerHeight + overflow + "px";
+  document.body.style.paddingBottom = `${overflow}px`;
+  window.scrollTo(0, overflow);
+
+  let scrollableEl = rankingContainer;
+
+  // Блокировка touchmove для корректной работы прокрутки
+  let ts;
+  const onTouchStart = (e) => {
+    ts = e.touches[0].clientY;
+  };
+  const onTouchMove = (e) => {
+    if (scrollableEl) {
+      const scroll = scrollableEl.scrollTop;
+      const te = e.changedTouches[0].clientY;
+      if (scroll <= 0 && ts < te) {
+        e.preventDefault();
+      }
+    } else {
+      e.preventDefault();
+    }
+  };
+  document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false });
+  document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false });
+
+  // Удаление уведомлений при нажатии на игрока в списке топов
+  rankingContainer.addEventListener('click', function(event) {
+    const target = event.target.closest('.ranking-item');
+    if (target) {
+      // Здесь вы можете добавить любой код, который не включает уведомления
+      console.log('Игрок выбран:', target.querySelector('.name').textContent);
     }
   });
 </script>
 </body>
 </html>
-    
