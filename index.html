@@ -118,7 +118,7 @@
     justify-content: space-between;
     background-color: #2C2F36;
     padding: 0;
-    position: fixed; /* Изменено с absolute на fixed */
+    position: absolute;
     top: 0;
     width: 100%;
     height: 50px;
@@ -210,25 +210,6 @@
   .ranking-item .rank {
     font-size: 24px;
     margin-left: 10px;
-  }
-
-  /* Добавим специальный стиль для iOS */
-  @supports (-webkit-touch-callout: none) {
-    body {
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-  }
-
-  /* Исправление для iOS */
-  html, body {
-    height: 100%;
-    overscroll-behavior: none;
-  }
-
-  .container {
-    flex: 1;
-    height: 100%;
   }
 </style>
 </head>
@@ -578,8 +559,6 @@
   document.body.style.paddingBottom = `${overflow}px`;
   window.scrollTo(0, overflow);
 
-  let scrollableEl = rankingContainer;
-
   // Блокировка touchmove для корректной работы прокрутки
   let ts;
   const onTouchStart = (e) => {
@@ -598,15 +577,6 @@
   };
   document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false });
   document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false });
-
-  // Удаление уведомлений при нажатии на игрока в списке топов
-  rankingContainer.addEventListener('click', function(event) {
-    const target = event.target.closest('.ranking-item');
-    if (target) {
-      // Здесь вы можете добавить любой код, который не включает уведомления
-      console.log('Игрок выбран:', target.querySelector('.name').textContent);
-    }
-  });
 </script>
 </body>
 </html>
