@@ -73,7 +73,7 @@
     cursor: not-allowed;
   }
 
-  #balance, #level, #developers {
+  #balance {
     position: relative;
     margin: 10px 0;
     font-size: 24px;
@@ -89,141 +89,18 @@
     content: '💰';
     margin-right: 10px;
   }
-
-  .menu {
-    display: flex;
-    justify-content: space-between;
-    background-color: #2C2F36;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 50px;
-    z-index: 30;
-  }
-
-  .menu button {
-    background-color: #2C2F36;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    flex: 1;
-    height: 100%;
-    margin: 0;
-    user-select: none;
-  }
-
-  .menu button.active {
-    background-color: #1F2126;
-  }
-
-  .menu button:hover, .menu button:active {
-    background-color: #1F2126;
-  }
-
-  .section {
-    display: none;
-    flex-grow: 1;
-    width: 100%;
-    padding-top: 10px; /* Отступ для заголовков */
-  }
-
-  .section.active {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .section-title {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 24px;
-    font-weight: bold;
-  }
-
-  .ranking-container {
-    flex-grow: 1;
-    overflow-y: auto; /* Включаем вертикальную прокрутку */
-    width: 100%;
-    max-height: calc(100vh - 100px); /* Устанавливаем максимальную высоту для контейнера */
-    padding: 10px;
-    box-sizing: border-box;
-    -webkit-overflow-scrolling: touch; /* Добавляем плавную прокрутку для iOS */
-  }
-
-  .ranking-item {
-    display: flex;
-    align-items: center;
-    background-color: rgba(44, 47, 54, 0.8);
-    border-radius: 10px;
-    margin: 5px 0;
-    padding: 10px;
-    color: white;
-    width: calc(100% - 20px);
-  }
-
-  .ranking-item img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-  }
-
-  .ranking-item .info {
-    flex-grow: 1;
-    text-align: left;
-  }
-
-  .ranking-item .info .name {
-    font-size: 18px;
-  }
-
-  .ranking-item .info .followers {
-    font-size: 16px;
-    color: #FFD700;
-  }
-
-  .ranking-item .rank {
-    font-size: 24px;
-    margin-left: 10px;
-  }
 </style>
 </head>
 <body>
-<div class="menu">
-  <button id="wheelButton" class="active" onclick="showSection('wheelSection')">Wheel</button>
-  <button id="upButton" onclick="showSection('upSection')">Up</button>
-  <button id="taskButton" onclick="showSection('taskSection')">Tasks</button>
-  <button id="topButton" onclick="showSection('topSection')">Top</button>
-</div>
 <div class="container">
-  <div id="wheelSection" class="section active">
-    <div id="balance">0</div>
-    <div id="level">Уровень: 1</div>
-    <div id="developers">Разработчики: 0</div>
-    <div class="wheel" id="wheel"></div>
-    <button class="button" id="spinButton" onclick="spinWheel()">Крутить</button>
-    <button class="button" id="claimButton" style="display: none;" onclick="claimPrize()">Забрать подарок</button>
-  </div>
-  <div id="upSection" class="section">
-    <h1>Up</h1>
-  </div>
-  <div id="taskSection" class="section">
-    <h1>Tasks</h1>
-  </div>
-  <div id="topSection" class="section">
-    <div class="section-title">Top Players</div>
-    <div class="ranking-container" id="ranking"></div>
-  </div>
+  <div id="balance">0</div>
+  <div class="wheel" id="wheel"></div>
+  <button class="button" id="spinButton" onclick="spinWheel()">Крутить</button>
+  <button class="button" id="claimButton" style="display: none;" onclick="claimPrize()">Забрать подарок</button>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   let balance = 0;
-  let level = 1;
-  let pointsToNextLevel = 1000;
-  let developers = 0;
-  let telegramId = null;
   let spinning = false;
 
   function spinWheel() {
@@ -246,75 +123,6 @@
     document.getElementById('spinButton').style.display = 'block';
   }
 
-  function showSection(sectionId) {
-    const sections = document.querySelectorAll('.section');
-    sections.forEach(section => {
-      section.classList.remove('active');
-    });
-    document.getElementById(sectionId).classList.add('active');
-    setActiveButton(sectionId + 'Button');
-    if (sectionId === 'topSection') {
-      fetchPlayerRanking();
-    }
-  }
-
-  function setActiveButton(buttonId) {
-    document.querySelectorAll('.menu button').forEach(button => {
-      button.classList.remove('active');
-    });
-    document.getElementById(buttonId).classList.add('active');
-  }
-
-  function fetchPlayerRanking() {
-    const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
-
-    fetch(webhookUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.data) {
-          const players = data.data;
-          displayRanking(players);
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка при получении рейтинга:', error);
-      });
-  }
-
-  function displayRanking(players) {
-    const rankingContainer = document.getElementById('ranking');
-    rankingContainer.innerHTML = '';
-
-    players.sort((a, b) => b.balance - a.balance);
-
-    players.slice(0, 100).forEach((player, index) => {
-      const rankingItem = document.createElement('div');
-      rankingItem.className = 'ranking-item';
-
-      const playerInfo = document.createElement('div');
-      playerInfo.className = 'info';
-
-      const playerName = document.createElement('div');
-      playerName.className = 'name';
-      playerName.textContent = player.username;
-
-      const playerFollowers = document.createElement('div');
-      playerFollowers.className = 'followers';
-      playerFollowers.textContent = player.balance.toLocaleString();
-
-      const playerRank = document.createElement('div');
-      playerRank.className = 'rank';
-      playerRank.textContent = index + 1;
-
-      playerInfo.appendChild(playerName);
-      playerInfo.appendChild(playerFollowers);
-      rankingItem.appendChild(playerInfo);
-      rankingItem.appendChild(playerRank);
-
-      rankingContainer.appendChild(rankingItem);
-    });
-  }
-
   // Telegram Web App integration
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.setBackgroundColor("#2E3E54");
@@ -325,7 +133,6 @@
     const initData = Telegram.WebApp.initDataUnsafe;
     if (initData && initData.user) {
       telegramId = initData.user.id;
-      fetchInitialData(telegramId);
       window.Telegram.WebApp.MainButton.setParams({
         text: "Сохранить результат",
         color: "#2C2F36",
@@ -333,7 +140,7 @@
       });
       window.Telegram.WebApp.MainButton.show();
       window.Telegram.WebApp.MainButton.onClick(function () {
-        const url = `https://app.leadteh.ru/w/bQ300?balance=${balance}&developers=${developers}&level=${level}`;
+        const url = `https://app.leadteh.ru/w/bQ300?balance=${balance}`;
         window.Telegram.WebApp.openLink(url);
         window.Telegram.WebApp.close();
       });
@@ -349,125 +156,6 @@
   } else {
     console.error("Telegram Web App not detected");
   }
-
-  function fetchInitialData(telegramId) {
-    const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
-
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        telegram_id: telegramId
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data && data.data) {
-        const userData = data.data.find(user => user.telegramId === telegramId);
-        if (userData) {
-          const initialBalance = userData.balance !== undefined ? userData.balance : 1;
-          const initialLevel = userData.level !== undefined ? userData.level : 1;
-          const initialDevelopers = userData.developers !== undefined ? userData.developers : 1;
-
-          setInitialData(initialBalance, initialLevel, initialDevelopers);
-        }
-      }
-    })
-    .catch(error => {
-      console.error('Ошибка:', error);
-    });
-  }
-
-  function setInitialData(initialBalance, initialLevel, initialDevelopers) {
-    balance = initialBalance;
-    level = initialLevel;
-    developers = initialDevelopers;
-    document.getElementById('balance').textContent = balance;
-    document.getElementById('level').textContent = 'Уровень: ' + level;
-    document.getElementById('developers').textContent = 'Разработчики: ' + developers;
-  }
-
-  window.addEventListener('beforeunload', saveGameState);
-
-  function saveGameState() {
-    const gameState = {
-      balance: balance,
-      level: level,
-      pointsToNextLevel: pointsToNextLevel,
-      developers: developers
-    };
-    localStorage.setItem('gameState', JSON.stringify(gameState));
-  }
-
-  function loadGameState() {
-    const gameState = JSON.parse(localStorage.getItem('gameState'));
-    if (gameState) {
-      balance = gameState.balance;
-      level = gameState.level;
-      pointsToNextLevel = gameState.pointsToNextLevel;
-      developers = gameState.developers;
-      document.getElementById('balance').textContent = balance;
-      document.getElementById('level').textContent = 'Уровень: ' + level;
-      document.getElementById('developers').textContent = 'Разработчики: ' + developers;
-    }
-  }
-
-  window.addEventListener('load', () => {
-    loadGameState();
-    fetchPlayerRanking();
-  });
-
-  function ensureFullScreen() {
-    if (!Telegram.WebApp.isExpanded) {
-      Telegram.WebApp.expand();
-    }
-  }
-
-  window.addEventListener('resize', ensureFullScreen);
-  ensureFullScreen();
-
-  // Обработка прокрутки списка
-  const rankingContainer = document.getElementById('ranking');
-  rankingContainer.addEventListener('touchstart', function(event) {
-    startY = event.touches[0].pageY - rankingContainer.offsetTop;
-    scrollTop = rankingContainer.scrollTop;
-  });
-
-  rankingContainer.addEventListener('touchmove', function(event) {
-    const y = event.touches[0].pageY - rankingContainer.offsetTop;
-    const walk = (y - startY);
-    rankingContainer.scrollTop = scrollTop - walk;
-  });
-
-  // Магия документа/тела для предотвращения закрытия окна и улучшения прокрутки
-  const overflow = 100;
-  document.body.style.overflowY = 'hidden';
-  document.body.style.marginTop = `${overflow}px`;
-  document.body.style.height = window.innerHeight + overflow + "px";
-  document.body.style.paddingBottom = `${overflow}px`;
-  window.scrollTo(0, overflow);
-
-  // Блокировка touchmove для корректной работы прокрутки
-  let ts;
-  const onTouchStart = (e) => {
-    ts = e.touches[0].clientY;
-  };
-  const onTouchMove = (e) => {
-    if (scrollableEl) {
-      const scroll = scrollableEl.scrollTop;
-      const te = e.changedTouches[0].clientY;
-      if (scroll <= 0 && ts < te) {
-        e.preventDefault();
-      }
-    } else {
-      e.preventDefault();
-    }
-  };
-  document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false });
-  document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false });
-
 </script>
 </body>
 </html>
