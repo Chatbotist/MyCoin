@@ -7,10 +7,12 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-image: url('koleso_fon.png');
+            background-size: cover;
             margin: 0;
             font-family: Arial, sans-serif;
         }
@@ -22,66 +24,40 @@
         .wheel {
             width: 100%;
             height: 100%;
+            background-image: url('koleso.png');
+            background-size: cover;
             border-radius: 50%;
-            border: 10px solid #333;
             position: relative;
             overflow: hidden;
             transform: rotate(0deg);
             transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-        }
-        .wheel:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 10px;
-            height: 10px;
-            background-color: #333;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .slice {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            background-color: transparent;
-            transform-origin: 100% 100%;
-        }
-        .slice:nth-child(1) { background-color: #f44336; transform: rotate(0deg); }
-        .slice:nth-child(2) { background-color: #ffeb3b; transform: rotate(60deg); }
-        .slice:nth-child(3) { background-color: #4caf50; transform: rotate(120deg); }
-        .slice:nth-child(4) { background-color: #2196f3; transform: rotate(180deg); }
-        .slice:nth-child(5) { background-color: #9c27b0; transform: rotate(240deg); }
-        .slice:nth-child(6) { background-color: #ff9800; transform: rotate(300deg); }
-        .slice span {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            color: #fff;
-            font-size: 24px;
         }
         .button-container {
             margin-top: 20px;
             text-align: center;
         }
         .button-container button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #fff;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .button-container button:active {
+            transform: scale(0.95);
+        }
+        .button-container button:focus {
+            outline: none;
         }
     </style>
 </head>
 <body>
     <div class="wheel-container">
-        <div class="wheel" id="wheel">
-            <div class="slice"><span>1</span></div>
-            <div class="slice"><span>2</span></div>
-            <div class="slice"><span>3</span></div>
-            <div class="slice"><span>4</span></div>
-            <div class="slice"><span>5</span></div>
-            <div class="slice"><span>6</span></div>
-        </div>
+        <div class="wheel" id="wheel"></div>
     </div>
     <div class="button-container">
         <button id="spinButton">Крутить</button>
