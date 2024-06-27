@@ -5,220 +5,231 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Coin Game</title>
 <style>
-body {
-  text-align: center;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: url('LeadtexFon.png') no-repeat center center fixed;
-  background-size: cover;
-  color: white;
-  overflow: hidden;
-  position: relative;
-  user-select: none;
-}
-
-.container {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  z-index: 10;
-  padding-top: 60px; /* Отступ для верхнего меню */
-  user-select: none;
-}
-
-.coin {
-  width: 300px;
-  height: 300px;
-  background: url('LeadtexCoin.png') no-repeat center center;
-  background-size: contain;
-  cursor: pointer;
-  margin: 70px auto 20px auto;
-  transition: transform 0.1s, box-shadow 0.1s;
-  user-select: none;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  border-radius: 50%;
-  display: block;
-  z-index: 20;
-  position: relative;
-}
-
-.coin.active {
-  transform: scale(0.95);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-#balance, #level, #developers {
-  position: relative;
-  margin: 10px 0;
-  font-size: 24px;
-  z-index: 10;
-  color: white;
-  text-align: left;
-  padding-left: 10px;
-  width: 100%;
-  max-width: 600px;
-}
-
-#balance::before {
-  content: '💰';
-  margin-right: 10px;
-}
-
-.click-animation {
-  position: absolute;
-  font-size: 36px;
-  color: white;
-  animation: fadeUp 0.5s ease-out forwards;
-  pointer-events: none;
-  z-index: 30;
-}
-
-@keyframes fadeUp {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-100px);
-  }
-}
-
-.progress-bar {
-  width: 80%;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  margin: 10px auto;
-  overflow: hidden;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.progress-bar-inner {
-  height: 100%;
-  background: linear-gradient(to right, #00DE70, #0496BC);
-  width: 0;
-  transition: width 0.3s;
-}
-
-.menu {
-  display: flex;
-  justify-content: space-between;
-  background-color: #2C2F36;
-  padding: 0;
-  position: fixed; /* Изменено с absolute на fixed */
-  top: 0;
-  width: 100%;
-  height: 50px;
-  z-index: 30;
-}
-
-.menu button {
-  background-color: #2C2F36;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  flex: 1;
-  height: 100%;
-  margin: 0;
-  user-select: none;
-}
-
-.menu button.active {
-  background-color: #1F2126;
-}
-
-.menu button:hover, .menu button:active {
-  background-color: #1F2126;
-}
-
-.section {
-  display: none;
-  flex-grow: 1;
-  width: 100%;
-  padding-top: 10px; /* Отступ для заголовков */
-}
-
-.section.active {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.section-title {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.ranking-container {
-  flex-grow: 1;
-  overflow-y: auto; /* Включаем вертикальную прокрутку */
-  width: 100%;
-  max-height: calc(100vh - 100px); /* Устанавливаем максимальную высоту для контейнера */
-  padding: 10px;
-  box-sizing: border-box;
-  -webkit-overflow-scrolling: touch; /* Добавляем плавную прокрутку для iOS */
-}
-
-.ranking-item {
-  display: flex;
-  align-items: center;
-  background-color: rgba(44, 47, 54, 0.8);
-  border-radius: 10px;
-  margin: 5px 0;
-  padding: 10px;
-  color: white;
-  width: calc(100% - 20px);
-}
-
-.ranking-item img {
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-}
-
-.ranking-item .info {
-  flex-grow: 1;
-  text-align: left;
-}
-
-.ranking-item .info .name {
-  font-size: 18px;
-}
-
-.ranking-item .info .followers {
-  font-size: 16px;
-  color: #FFD700;
-}
-
-.ranking-item .rank {
-  font-size: 24px;
-  margin-left: 10px;
-}
-
-/* Добавим специальный стиль для iOS */
-@supports (-webkit-touch-callout: none) {
   body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: url('LeadtexFon.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
   }
-}
+
+  .container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    z-index: 10;
+    padding-top: 60px; /* Отступ для верхнего меню */
+    user-select: none;
+  }
+
+  .coin {
+    width: 300px;
+    height: 300px;
+    background: url('LeadtexCoin.png') no-repeat center center;
+    background-size: contain;
+    cursor: pointer;
+    margin: 70px auto 20px auto;
+    transition: transform 0.1s, box-shadow 0.1s;
+    user-select: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50%;
+    display: block;
+    z-index: 20;
+    position: relative;
+  }
+
+  .coin.active {
+    transform: scale(0.95);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  #balance, #level, #developers {
+    position: relative;
+    margin: 10px 0;
+    font-size: 24px;
+    z-index: 10;
+    color: white;
+    text-align: left;
+    padding-left: 10px;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  #balance::before {
+    content: '💰';
+    margin-right: 10px;
+  }
+
+  .click-animation {
+    position: absolute;
+    font-size: 36px;
+    color: white;
+    animation: fadeUp 0.5s ease-out forwards;
+    pointer-events: none;
+    z-index: 30;
+  }
+
+  @keyframes fadeUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-100px);
+    }
+  }
+
+  .progress-bar {
+    width: 80%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin: 10px auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(to right, #00DE70, #0496BC);
+    width: 0;
+    transition: width 0.3s;
+  }
+
+  .menu {
+    display: flex;
+    justify-content: space-between;
+    background-color: #2C2F36;
+    padding: 0;
+    position: fixed; /* Изменено с absolute на fixed */
+    top: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 30;
+  }
+
+  .menu button {
+    background-color: #2C2F36;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    flex: 1;
+    height: 100%;
+    margin: 0;
+    user-select: none;
+  }
+
+  .menu button.active {
+    background-color: #1F2126;
+  }
+
+  .menu button:hover, .menu button:active {
+    background-color: #1F2126;
+  }
+
+  .section {
+    display: none;
+    flex-grow: 1;
+    width: 100%;
+    padding-top: 10px; /* Отступ для заголовков */
+  }
+
+  .section.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .section-title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .ranking-container {
+    flex-grow: 1;
+    overflow-y: auto; /* Включаем вертикальную прокрутку */
+    width: 100%;
+    max-height: calc(100vh - 100px); /* Устанавливаем максимальную высоту для контейнера */
+    padding: 10px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch; /* Добавляем плавную прокрутку для iOS */
+  }
+
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    background-color: rgba(44, 47, 54, 0.8);
+    border-radius: 10px;
+    margin: 5px 0;
+    padding: 10px;
+    color: white;
+    width: calc(100% - 20px);
+  }
+
+  .ranking-item img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+
+  .ranking-item .info {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .ranking-item .info .name {
+    font-size: 18px;
+  }
+
+  .ranking-item .info .followers {
+    font-size: 16px;
+    color: #FFD700;
+  }
+
+  .ranking-item .rank {
+    font-size: 24px;
+    margin-left: 10px;
+  }
+
+  /* Добавим специальный стиль для iOS */
+  @supports (-webkit-touch-callout: none) {
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+
+  /* Исправление для iOS */
+  html, body {
+    height: 100%;
+    overscroll-behavior: none;
+  }
+
+  .container {
+    flex: 1;
+    height: 100%;
+  }
 </style>
 </head>
 <body>
@@ -548,43 +559,24 @@ body {
 
   // Обработка прокрутки списка
   const rankingContainer = document.getElementById('ranking');
-  rankingContainer.addEventListener('touchstart', function(event) {
-    startY = event.touches[0].pageY - rankingContainer.offsetTop;
-    scrollTop = rankingContainer.scrollTop;
-  });
-
-  rankingContainer.addEventListener('touchmove', function(event) {
-    const y = event.touches[0].pageY - rankingContainer.offsetTop;
-    const walk = (y - startY);
-    rankingContainer.scrollTop = scrollTop - walk;
-  });
-
-  // Магия документа/тела для предотвращения закрытия окна и улучшения прокрутки
-  const overflow = 100;
-  document.body.style.overflowY = 'hidden';
-  document.body.style.marginTop = `${overflow}px`;
-  document.body.style.height = window.innerHeight + overflow + "px";
-  document.body.style.paddingBottom = `${overflow}px`;
-  window.scrollTo(0, overflow);
-
-  // Блокировка touchmove для корректной работы прокрутки
-  let ts;
-  const onTouchStart = (e) => {
-    ts = e.touches[0].clientY;
-  };
-  const onTouchMove = (e) => {
-    if (scrollableEl) {
-      const scroll = scrollableEl.scrollTop;
-      const te = e.changedTouches[0].clientY;
-      if (scroll <= 0 && ts < te) {
-        e.preventDefault();
-      }
-    } else {
-      e.preventDefault();
+    rankingContainer.addEventListener('scroll', () => {
+    const { scrollTop, scrollHeight, clientHeight } = rankingContainer;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      // Достигнут конец списка, можно загрузить больше данных, если необходимо
+      // Например, можно вызвать функцию для подгрузки дополнительных игроков
     }
-  };
-  document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false });
-  document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false });
+  });
+
+  // Обработка кликов по элементам списка
+  rankingContainer.addEventListener('click', (event) => {
+    const rankingItem = event.target.closest('.ranking-item');
+    if (rankingItem) {
+      const playerName = rankingItem.querySelector('.name').textContent;
+      alert(`Вы выбрали игрока: ${playerName}`);
+      // Можно добавить дополнительные действия при выборе игрока
+    }
+  });
 </script>
 </body>
 </html>
+    
