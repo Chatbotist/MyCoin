@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Coin Game</title>
+<title>Wheel of Fortune</title>
 <style>
   body {
     text-align: center;
@@ -36,14 +36,13 @@
     user-select: none;
   }
 
-  .coin {
+  .wheel {
     width: 300px;
     height: 300px;
-    background: url('LeadtexCoin.png') no-repeat center center;
+    background: url('wheel.png') no-repeat center center;
     background-size: contain;
-    cursor: pointer;
     margin: 70px auto 20px auto;
-    transition: transform 0.1s, box-shadow 0.1s;
+    transition: transform 4s ease-out;
     user-select: none;
     outline: none;
     -webkit-tap-highlight-color: transparent;
@@ -53,9 +52,25 @@
     position: relative;
   }
 
-  .coin.active {
-    transform: scale(0.95);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  .button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 10px;
+    cursor: pointer;
+    background-color: #2C2F36;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .button:hover {
+    background-color: #1F2126;
+  }
+
+  .button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
   }
 
   #balance, #level, #developers {
@@ -73,44 +88,6 @@
   #balance::before {
     content: '💰';
     margin-right: 10px;
-  }
-
-  .click-animation {
-    position: absolute;
-    font-size: 36px;
-    color: white;
-    animation: fadeUp 0.5s ease-out forwards;
-    pointer-events: none;
-    z-index: 30;
-  }
-
-  @keyframes fadeUp {
-    0% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-100px);
-    }
-  }
-
-  .progress-bar {
-    width: 80%;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    margin: 10px auto;
-    overflow: hidden;
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .progress-bar-inner {
-    height: 100%;
-    background: linear-gradient(to right, #00DE70, #0496BC);
-    width: 0;
-    transition: width 0.3s;
   }
 
   .menu {
@@ -215,20 +192,19 @@
 </head>
 <body>
 <div class="menu">
-  <button id="coinButton" class="active" onclick="showSection('coinSection')">Coin</button>
+  <button id="wheelButton" class="active" onclick="showSection('wheelSection')">Wheel</button>
   <button id="upButton" onclick="showSection('upSection')">Up</button>
   <button id="taskButton" onclick="showSection('taskSection')">Tasks</button>
   <button id="topButton" onclick="showSection('topSection')">Top</button>
 </div>
 <div class="container">
-  <div id="coinSection" class="section active">
+  <div id="wheelSection" class="section active">
     <div id="balance">0</div>
     <div id="level">Уровень: 1</div>
     <div id="developers">Разработчики: 0</div>
-    <div class="progress-bar">
-      <div class="progress-bar-inner" id="progress"></div>
-    </div>
-    <div class="coin" id="coin"></div>
+    <div class="wheel" id="wheel"></div>
+    <button class="button" id="spinButton" onclick="spinWheel()">Крутить</button>
+    <button class="button" id="claimButton" style="display: none;" onclick="claimPrize()">Забрать подарок</button>
   </div>
   <div id="upSection" class="section">
     <h1>Up</h1>
@@ -248,46 +224,26 @@
   let pointsToNextLevel = 1000;
   let developers = 0;
   let telegramId = null;
+  let spinning = false;
 
-  function vibrateOnClick() {
-    if ("vibrate" in navigator) {
-      window.navigator.vibrate(100);
-    }
-  }
-
-  function incrementScore(x, y) {
-    balance++;
-    document.getElementById('balance').textContent = balance;
-    showClickAnimation(x, y);
-    checkLevelUp();
-    updateProgressBar();
-    saveGameState();
-  }
-
-  function showClickAnimation(x, y) {
-    const clickText = document.createElement('div');
-    clickText.textContent = '+1';
-    clickText.className = 'click-animation';
-    clickText.style.left = `${x - 18}px`;
-    clickText.style.top = `${y - 50}px`;
-    document.body.appendChild(clickText);
+  function spinWheel() {
+    if (spinning) return;
+    spinning = true;
+    document.getElementById('spinButton').style.display = 'none';
+    const wheel = document.getElementById('wheel');
+    const degrees = Math.floor(Math.random() * 3600) + 360; // Random spin
+    wheel.style.transform = `rotate(${degrees}deg)`;
     setTimeout(() => {
-      clickText.remove();
-    }, 500);
+      spinning = false;
+      document.getElementById('claimButton').style.display = 'block';
+    }, 4000); // Duration of spin
   }
 
-  function checkLevelUp() {
-    if (developers >= pointsToNextLevel) {
-      level++;
-      pointsToNextLevel = Math.floor(pointsToNextLevel * 1.5);
-      document.getElementById('level').textContent = 'Уровень: ' + level;
-      updateProgressBar(true);
-    }
-  }
-
-  function updateProgressBar(reset = false) {
-    const progress = reset ? 0 : Math.min((developers / pointsToNextLevel) * 100, 100);
-    document.getElementById('progress').style.width = progress + '%';
+  function claimPrize() {
+    balance += Math.floor(Math.random() * 100) + 1; // Random prize
+    document.getElementById('balance').textContent = balance;
+    document.getElementById('claimButton').style.display = 'none';
+    document.getElementById('spinButton').style.display = 'block';
   }
 
   function showSection(sectionId) {
@@ -307,30 +263,6 @@
       button.classList.remove('active');
     });
     document.getElementById(buttonId).classList.add('active');
-  }
-
-  function saveGameState() {
-    const gameState = {
-      balance: balance,
-      level: level,
-      pointsToNextLevel: pointsToNextLevel,
-      developers: developers
-    };
-    localStorage.setItem('gameState', JSON.stringify(gameState));
-  }
-
-  function loadGameState() {
-    const gameState = JSON.parse(localStorage.getItem('gameState'));
-    if (gameState) {
-      balance = gameState.balance;
-      level = gameState.level;
-      pointsToNextLevel = gameState.pointsToNextLevel;
-      developers = gameState.developers;
-      document.getElementById('balance').textContent = balance;
-      document.getElementById('level').textContent = 'Уровень: ' + level;
-      document.getElementById('developers').textContent = 'Разработчики: ' + developers;
-      updateProgressBar();
-    }
   }
 
   function fetchPlayerRanking() {
@@ -383,6 +315,7 @@
     });
   }
 
+  // Telegram Web App integration
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.setBackgroundColor("#2E3E54");
     window.Telegram.WebApp.setHeaderColor("#182A42");
@@ -416,76 +349,6 @@
   } else {
     console.error("Telegram Web App not detected");
   }
-
-  function handleTouchStart(event) {
-    event.preventDefault();
-    const coin = document.getElementById('coin');
-    const rect = coin.getBoundingClientRect();
-    const touches = event.touches;
-    if (touches.length <= 2) {
-      for (let i = 0; i < touches.length; i++) {
-        const touch = touches[i];
-        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-          coin.classList.add('active');
-        }
-      }
-    }
-  }
-
-  function handleTouchEnd(event) {
-    event.preventDefault();
-    const coin = document.getElementById('coin');
-    const rect = coin.getBoundingClientRect();
-    const changedTouches = event.changedTouches;
-    if (changedTouches.length <= 2) {
-      for (let i = 0; i < changedTouches.length; i++) {
-        const touch = changedTouches[i];
-        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-          incrementScore(touch.clientX, touch.clientY);
-          vibrateOnClick();
-        }
-      }
-      coin.classList.remove('active');
-    } else {
-      for (let i = 0; i < changedTouches.length; i++) {
-        const touch = changedTouches[i];
-        if (touch.clientX >= rect.left && touch.clientX <= rect.right && touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-          incrementScore(touch.clientX, touch.clientY);
-          vibrateOnClick();
-        }
-      }
-    }
-  }
-
-  document.getElementById('coin').addEventListener('touchstart', handleTouchStart);
-  document.getElementById('coin').addEventListener('touchend', handleTouchEnd);
-
-  window.addEventListener('load', () => {
-    loadGameState();
-    fetchPlayerRanking();
-  });
-
-  document.addEventListener('gesturestart', function (event) {
-    event.preventDefault();
-  });
-
-  function resizeGame() {
-    const container = document.querySelector('.container');
-    const aspectRatio = 16 / 9;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
-    if (windowWidth / windowHeight < aspectRatio) {
-      container.style.width = '100%';
-      container.style.height = 'auto';
-    } else {
-      container.style.width = 'auto';
-      container.style.height = '100%';
-    }
-  }
-
-  window.addEventListener('resize', resizeGame);
-  resizeGame();
 
   function fetchInitialData(telegramId) {
     const webhookUrl = 'https://hook.eu2.make.com/aaa7sk28al8f0zikwpb46wigm13j7vrz';
@@ -524,10 +387,37 @@
     document.getElementById('balance').textContent = balance;
     document.getElementById('level').textContent = 'Уровень: ' + level;
     document.getElementById('developers').textContent = 'Разработчики: ' + developers;
-    updateProgressBar();
   }
 
   window.addEventListener('beforeunload', saveGameState);
+
+  function saveGameState() {
+    const gameState = {
+      balance: balance,
+      level: level,
+      pointsToNextLevel: pointsToNextLevel,
+      developers: developers
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+  }
+
+  function loadGameState() {
+    const gameState = JSON.parse(localStorage.getItem('gameState'));
+    if (gameState) {
+      balance = gameState.balance;
+      level = gameState.level;
+      pointsToNextLevel = gameState.pointsToNextLevel;
+      developers = gameState.developers;
+      document.getElementById('balance').textContent = balance;
+      document.getElementById('level').textContent = 'Уровень: ' + level;
+      document.getElementById('developers').textContent = 'Разработчики: ' + developers;
+    }
+  }
+
+  window.addEventListener('load', () => {
+    loadGameState();
+    fetchPlayerRanking();
+  });
 
   function ensureFullScreen() {
     if (!Telegram.WebApp.isExpanded) {
@@ -577,6 +467,7 @@
   };
   document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false });
   document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false });
+
 </script>
 </body>
 </html>
