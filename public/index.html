@@ -90,7 +90,7 @@
       section.classList.remove('active');
     });
     document.getElementById(sectionId).classList.add('active');
-    setActiveButton(sectionId + 'Button');
+    setActiveButton(sectionId.replace('Section', 'Button'));
     if (sectionId === 'topSection') {
       fetchPlayerRanking();
     }
