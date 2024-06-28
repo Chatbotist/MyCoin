@@ -111,7 +111,7 @@ body {
   justify-content: space-between;
   background-color: #2C2F36;
   padding: 0;
-  position: absolute;
+  position: fixed; /* Изменили на fixed */
   bottom: 0; /* Перенесли меню в нижнюю часть экрана */
   width: 100%;
   height: 50px;
