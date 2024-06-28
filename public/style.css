@@ -171,7 +171,7 @@
   .ranking-item {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(128, 128, 128, 0.5); /*Тут меняем цвет плашек раздела топ*/
     border-radius: 10px;
     margin: 5px 0;
     padding: 10px;
