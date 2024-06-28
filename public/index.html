@@ -7,12 +7,6 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="menu">
-  <button id="coinButton" class="active" onclick="showSection('coinSection')">Coin</button>
-  <button id="upButton" onclick="showSection('upSection')">Up</button>
-  <button id="taskButton" onclick="showSection('taskSection')">Tasks</button>
-  <button id="topButton" onclick="showSection('topSection')">Top</button>
-</div>
 <div class="container">
   <div id="coinSection" class="section active">
     <div id="balance">0</div>
@@ -34,8 +28,15 @@
     <div class="ranking-container" id="ranking"></div>
   </div>
 </div>
+<div class="menu">
+  <button id="coinButton" class="active" onclick="showSection('coinSection')">Coin</button>
+  <button id="upButton" onclick="showSection('upSection')">Up</button>
+  <button id="taskButton" onclick="showSection('taskSection')">Tasks</button>
+  <button id="topButton" onclick="showSection('topSection')">Top</button>
+</div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
+  // JavaScript код остается без изменений
   let balance = 0;
   let level = 1;
   let pointsToNextLevel = 1000;
